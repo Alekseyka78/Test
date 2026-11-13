@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="format-detection" content="telephone=no">
+<title>Инотропы: скорость и доза</title>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#ffffff;--card:#f5f4f0;--card2:#e4e2da;--text:#1c1c1a;--text2:#5a5954;--muted:#8a8882;--border:#d9d7cf;
+  --accent:#2a78d6;--ok:#0b7a0b;--warn:#a65d00;--bad:#b3261e;--band:#0ca30c;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#1a1a19;--card:#262624;--card2:#3a3a37;--text:#f0efec;--text2:#c3c2b7;--muted:#898781;--border:#3a3a37;
+  --accent:#3987e5;--ok:#5fcf5f;--warn:#f0a53a;--bad:#ff8a80;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#1a1a19;--card:#262624;--card2:#3a3a37;--text:#f0efec;--text2:#c3c2b7;--muted:#898781;--border:#3a3a37;
+  --accent:#3987e5;--ok:#5fcf5f;--warn:#f0a53a;--bad:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:780px;margin:0 auto;padding-block:24px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;font-weight:500;margin:0 0 4px;text-wrap:balance}
+.lead{font-size:14px;color:var(--text2);margin:0 0 18px}
+
+/* shared */
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 12px;margin-top:16px}
+.grp{background:var(--card);border-radius:8px;padding:12px 16px;margin:0 0 12px}
+.gt{font-size:13px;color:var(--text2);margin:0 0 10px}
+.sl{display:grid;grid-template-columns:96px minmax(0,1fr) 100px;align-items:center;gap:10px;margin:0 0 8px}
+.sl:last-child{margin:0}
+.sl label{font-size:13px}
+.sl .v{font-size:13px;font-weight:500;text-align:right}
+input[type=range]{accent-color:var(--accent);width:100%;margin:0}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.sl .seg{grid-column:2/4;justify-self:start}
+.seg button{font:inherit;font-size:13px;padding:5px 14px;background:none;color:var(--text);border:0;cursor:pointer}
+.seg button+button{border-left:1px solid var(--border)}
+.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.eq{font-size:13px;line-height:1.8;color:var(--text2);background:var(--card);border-radius:8px;padding:12px 16px;margin:0 0 12px}
+.eq b{color:var(--text);font-weight:500}
+.eq .row{display:flex;gap:8px;margin:0 0 4px}
+.eq .row:last-child{margin:0}
+.eq .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;text-align:center;line-height:20px;margin-top:3px}
+.warn{font-size:13px;color:var(--bad);margin:0 0 8px;min-height:1px}
+.heroes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:0 0 8px}
+.hero{background:var(--card);border-radius:8px;padding:16px 20px}
+.hero .nm{font-size:14px;color:var(--text2);margin:0 0 2px}
+.hero .top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.hero .big{font-family:Georgia,"Times New Roman",serif;font-size:60px;line-height:1;font-weight:500}
+.hero .un{font-size:14px;color:var(--text2)}
+.hero .st{font-size:15px;font-weight:500;margin-top:6px;min-height:22px}
+.trk{position:relative;height:10px;background:var(--card2);border-radius:5px;margin:14px 0 6px}
+.trk.segs{display:flex;background:none;margin:12px 0 6px}
+.trk .seg2{height:100%}
+.trk .seg2:first-child{border-radius:5px 0 0 5px}
+.trk .seg2:last-child{border-radius:0 5px 5px 0}
+.nb{position:absolute;top:0;height:100%;background:var(--band);opacity:.4;border-radius:5px}
+.mk{position:absolute;top:-4px;width:4px;height:18px;background:var(--text);border-radius:2px;transform:translateX(-2px);box-shadow:0 0 0 1.5px var(--card)}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.ticks{position:relative;height:16px;font-size:11px;color:var(--muted)}
+.ticks span{position:absolute;transform:translateX(-50%)}
+.legend{font-size:12px;color:var(--text2);margin:0 0 16px}
+.sub{font-size:13px;color:var(--text2);margin:0 0 8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 12px}
+.card{background:var(--card);border-radius:8px;padding:12px 14px}
+.card .nm{font-size:13px;color:var(--text2)}
+.card .vl{font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1.1;font-weight:500;margin:2px 0}
+.card .u{font-size:12px;color:var(--text2)}
+.card .rg{font-size:11px;color:var(--muted)}
+.card .s{font-size:13px;margin-top:4px;min-height:20px}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 0 0}
+
+
+/* dose calculator */
+.dchips{display:flex;flex-wrap:wrap;gap:8px}
+.dchip{font:inherit;font-size:13px;padding:8px 12px;background:none;color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;line-height:1.3}
+.dchip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.dchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.numin{width:76px;font:inherit;font-size:16px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);text-align:right}
+.numin:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+#d_volbox .seg button{padding:5px 9px;white-space:nowrap}
+.sfn{font-size:12px;color:var(--text2);margin:8px 0 0;line-height:1.5}
+.sfn b{color:var(--text);font-weight:500}
+.hero .sm{font-size:13px;color:var(--text2);line-height:1.5;margin-top:6px}
+.qchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.qchip{flex:1;min-width:150px;display:flex;flex-direction:column;gap:2px;align-items:center;padding:8px 6px;font:inherit;font-size:13px;line-height:1.3;color:var(--text);background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer}
+.qchip:hover{background:var(--card)}
+.qchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qchip b{font-weight:500;font-size:14px}
+.qchip span{color:var(--text2);font-size:12px}
+.sig{margin-top:32px;font-size:11px;line-height:1.5;color:var(--muted);opacity:.22;user-select:none}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Инотропы: скорость и доза</h1>
+  <p class="lead">Укажите вес, препарат и число ампул в шприце 50 мл. Двигайте скорость дозатора, чтобы увидеть дозу, или двигайте дозу, чтобы увидеть скорость.</p>
+
+  <div class="grp"><div class="gt">Препарат</div><div class="dchips" id="d_chips"></div></div>
+
+  <div class="grp">
+    <div class="gt">Пациент и шприц 50 мл</div>
+    <div class="sl"><label for="d_w">Вес</label><input type="range" id="d_w" min="20" max="150" step="1" value="70"><span class="v" id="d_wv"></span></div>
+    <div class="sl"><label for="d_a">Ампулы</label><input type="range" id="d_a" min="1" max="12" step="1" value="1"><span class="v" id="d_av"></span></div>
+    <div class="sl"><label>В ампуле</label><span id="d_volbox"></span><span class="v" id="d_cv"></span></div>
+    <div class="sfn" id="d_sy"></div>
+  </div>
+
+  <div class="grp">
+    <div class="gt">Скорость и доза</div>
+    <div class="sl"><label for="d_r">Скорость</label><input type="range" id="d_r" min="0" max="100" step="0.1" value="5"><span class="v" id="d_rv"></span></div>
+    <div class="sl"><label for="d_d">Доза</label><input type="range" id="d_d" min="0" max="5" step="0.01" value="0"><span class="v" id="d_dv"></span></div>
+  </div>
+
+  <div class="warn" id="d_warn" role="status"></div>
+
+  <div class="heroes">
+    <div class="hero">
+      <div class="nm">Доза при текущей скорости</div>
+      <div class="top"><span class="big" id="d_dose">0</span><span class="un">мкг/кг/мин</span></div>
+      <div class="st" id="d_doses"></div>
+      <div class="trk"><div class="nb" id="d_nb"></div><div class="mk" id="d_mk"></div></div>
+      <div class="scale"><span>0</span><span id="d_rng"></span><span id="d_max"></span></div>
+    </div>
+    <div class="hero">
+      <div class="nm">Скорость дозатора</div>
+      <div class="top"><span class="big" id="d_rate">0</span><span class="un">мл/ч</span></div>
+      <div class="sm" id="d_rates"></div>
+    </div>
+  </div>
+
+  <div class="sub">Границы терапевтического диапазона для вашего веса (нажмите, чтобы перейти)</div>
+  <div class="qchips" id="d_q"></div>
+
+  <div class="eq" id="d_eq"></div>
+
+  <p class="note">Учебный расчёт. Концентрации: адреналин 0,1%, мезатон 1%, норадреналин 0,2%, допамин 4%, добутамин 1,25% или 4% (флакон 250 мг, растворённый в 6,25 мл). Объём ампулы взят по стандартным упаковкам: у норадреналина 2 мг/мл выбирается 4 или 8 мл, у остальных препаратов он фиксирован и показан справочно. Проверьте объём на своей упаковке. Доза округляется до сотых, скорость до 0,1 мл/ч, а доза при заданной вами дозе пересчитывается от округлённой скорости. Диапазоны доз по таблице (Марино, Хенсли). Перед введением сверяйте расчёт с протоколом отделения и проводите двойную проверку.</p>
+  <div class="sig" aria-hidden="true">© @AlekseyKa78</div>
+</main>
+
+<script>
+function fm(x,d){return x.toFixed(d).replace('.',',')}
+function nf(x){return String(x).replace('.',',')}
+function byId(id){return document.getElementById(id)}
+
+(function(){
+  var P='d_';function $(i){return byId(P+i)}
+  // conc — мг/мл; vamp — объём ампулы по умолчанию, мл; lo/hi — терапевтический диапазон, мкг/кг/мин
+  var D=[
+    {k:'adr',n:'Адреналин 0,1%',conc:1,vamp:1,lo:0.01,hi:0.5,dmax:1,dstep:0.01},
+    {k:'mez',n:'Мезатон 1%',conc:10,vamp:1,lo:0.3,hi:2,dmax:3,dstep:0.05},
+    {k:'nor',n:'Норадреналин 0,2%',conc:2,vamp:4,vopts:[4,8],lo:0.2,hi:5,dmax:5,dstep:0.01},
+    {k:'dop',n:'Допамин 4%',conc:40,vamp:5,lo:1,hi:20,dmax:25,dstep:0.5},
+    {k:'db1',n:'Добутамин 1,25%',conc:12.5,vamp:20,lo:2.5,hi:15,dmax:20,dstep:0.5},
+    {k:'db4',n:'Добутамин 4% (флакон)',conc:40,vamp:6.25,lo:2.5,hi:15,dmax:20,dstep:0.5}
+  ];
+  var cur=2; // норадреналин по умолчанию
+  var chips=$('chips');
+  D.forEach(function(d,i){
+    var b=document.createElement('button');b.type='button';b.className='dchip';b.id=P+'c'+i;
+    b.textContent=d.n;b.setAttribute('aria-pressed',i===cur?'true':'false');
+    b.onclick=function(){pick(i)};
+    chips.appendChild(b);
+  });
+
+  var W=$('w'),A=$('a'),R=$('r'),Ds=$('d');
+  var vcur=D[cur].vamp; // объём одной ампулы, мл
+  function dfmt(x){return fm(x,2)} // доза всегда с точностью до сотых
+  function vamp(){return vcur}
+  function buildVol(){
+    var d=D[cur],box=$('volbox');box.innerHTML='';
+    if(d.vopts){
+      var g=document.createElement('div');g.className='seg';g.setAttribute('role','group');g.setAttribute('aria-label','Объём ампулы, мл');
+      d.vopts.forEach(function(o){
+        var b=document.createElement('button');b.type='button';b.textContent=nf(o)+' мл';
+        b.setAttribute('aria-pressed',o===vcur?'true':'false');
+        b.onclick=function(){vcur=o;buildVol();setAmpMax();render(false)};
+        g.appendChild(b);
+      });
+      box.appendChild(g);
+    }else{
+      var t=document.createElement('span');t.style.fontWeight='500';t.textContent=nf(vcur)+' мл';box.appendChild(t);
+      var u=document.createElement('span');u.style.color='var(--text2)';u.style.fontSize='12px';u.textContent=' (объём ампулы не меняется)';box.appendChild(u);
+    }
+  }
+
+  function syr(){ // параметры шприца
+    var vv=vamp(),a=+A.value,d=D[cur];
+    var vol=a*vv,mg=vol*d.conc,c=mg*1000/50; // c — мкг/мл
+    return {a:a,vv:vv,vol:vol,mg:mg,c:c};
+  }
+  function setAmpMax(){
+    var vv=vamp(),mx=Math.max(1,Math.min(20,Math.floor(50/vv)));
+    A.max=mx;if(+A.value>mx)A.value=mx;
+  }
+  function pick(i){
+    cur=i;
+    D.forEach(function(d,k){$('c'+k).setAttribute('aria-pressed',k===i?'true':'false')});
+    vcur=D[i].vamp;buildVol();
+    A.value=1;setAmpMax();
+    Ds.max=D[i].dmax;Ds.step=D[i].dstep;
+    render(false);
+  }
+  function clamp(x,lo,hi){return Math.min(Math.max(x,lo),hi)}
+
+  // fromDose: true — пользователь двигает дозу, скорость пересчитывается
+  function render(fromDose){
+    var d=D[cur],w=+W.value,s=syr();
+    if(fromDose){
+      var want=+Ds.value;
+      R.value=clamp(Math.round(want*60*w/s.c*10)/10,0,100);
+    }
+    var rate=+R.value;
+    var dose=rate*s.c/(60*w);
+    if(!fromDose)Ds.value=clamp(dose,0,+Ds.max);
+    // текст у ползунков
+    $('wv').textContent=w+' кг';
+    $('av').textContent=s.a+' амп.';
+    $('cv').textContent=nf(d.conc)+' мг/мл';
+    $('rv').textContent=fm(rate,1)+' мл/ч';
+    $('dv').textContent=dfmt(fromDose?+Ds.value:dose);
+    $('sy').innerHTML='В шприце: <b>'+nf(+s.vol.toFixed(2))+' мл</b> препарата ('+s.a+' амп.), <b>'+nf(+s.mg.toFixed(2))+' мг</b>; растворитель до 50 мл: <b>'+nf(+Math.max(50-s.vol,0).toFixed(2))+' мл</b>; концентрация <b>'+nf(+s.c.toFixed(1))+' мкг/мл</b>';
+    // результаты
+    $('dose').textContent=dfmt(dose);
+    $('rate').textContent=fm(rate,1);
+    var l=dose<d.lo,h=dose>d.hi,st=$('doses');
+    st.style.color=(l||h)?'var(--warn)':'var(--ok)';
+    st.textContent=l?'↓ Ниже диапазона':h?'↑ Выше диапазона':'✓ В диапазоне';
+    var mx=+Ds.max;
+    $('nb').style.left=(d.lo/mx*100)+'%';$('nb').style.width=(Math.min(d.hi,mx)-d.lo)/mx*100+'%';
+    $('mk').style.left=clamp(dose/mx,0,1)*100+'%';
+    $('rng').textContent='Диапазон '+nf(d.lo)+'–'+nf(d.hi);$('max').textContent=nf(mx);
+    $('rates').textContent=rate>0?'Шприц 50 мл закончится через '+nf(+(50/rate).toFixed(1))+' ч':'Инфузия остановлена';
+    // быстрые переходы
+    var q=$('q');q.innerHTML='';
+    [['Нижняя граница',d.lo],['Верхняя граница',d.hi]].forEach(function(p){
+      var raw=p[1]*60*w/s.c,r=clamp(Math.round(raw*10)/10,0,100);
+      var b=document.createElement('button');b.type='button';b.className='qchip';
+      b.innerHTML='<b>'+fm(p[1],2)+' мкг/кг/мин</b><span>'+p[0]+(raw>100?' → нужно '+fm(raw,1)+' мл/ч (больше 100)':' → '+fm(r,1)+' мл/ч')+'</span>';
+      b.onclick=function(){Ds.value=clamp(p[1],0,+Ds.max);render(true)};
+      q.appendChild(b);
+    });
+    // предупреждения
+    var msg=[];
+    if(s.vol>50)msg.push('Объём препарата больше 50 мл: шприц 50 мл не подходит.');
+    $('warn').textContent=msg.join(' ');
+    // расчёт по шагам
+    $('eq').innerHTML=
+      '<div class="row"><span class="n">1</span><span>В шприце: '+s.a+' × '+nf(s.vv)+' мл = <b>'+nf(+s.vol.toFixed(2))+' мл</b> препарата, × '+nf(d.conc)+' мг/мл = <b>'+nf(+s.mg.toFixed(2))+' мг</b></span></div>'+
+      '<div class="row"><span class="n">2</span><span>Концентрация: '+nf(+s.mg.toFixed(2))+' мг × 1000 ÷ 50 мл = <b>'+nf(+s.c.toFixed(1))+' мкг/мл</b></span></div>'+
+      '<div class="row"><span class="n">3</span><span>Доза = скорость × концентрация ÷ (60 × вес) = '+fm(rate,1)+' × '+nf(+s.c.toFixed(1))+' ÷ (60 × '+w+') = <b>'+dfmt(dose)+' мкг/кг/мин</b></span></div>'+
+      '<div class="row"><span class="n">4</span><span>Скорость для нужной дозы = доза × 60 × вес ÷ концентрация</span></div>';
+  }
+  W.oninput=function(){render(false)};
+  A.oninput=function(){render(false)};
+  R.oninput=function(){render(false)};
+  Ds.oninput=function(){render(true)};
+  pick(cur);
+  R.value=5;render(false);
+})();
+</script>
+</body>
+</html>
