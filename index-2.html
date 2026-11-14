@@ -1,0 +1,2096 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="format-detection" content="telephone=no"><title>Медицинские калькуляторы</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#ffffff;--card:#f5f4f0;--card2:#e4e2da;--text:#1c1c1a;--text2:#5a5954;--muted:#8a8882;--border:#d9d7cf;
+  --accent:#2a78d6;--ok:#0b7a0b;--warn:#a65d00;--bad:#b3261e;--band:#0ca30c;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#1a1a19;--card:#262624;--card2:#3a3a37;--text:#f0efec;--text2:#c3c2b7;--muted:#898781;--border:#3a3a37;
+  --accent:#3987e5;--ok:#5fcf5f;--warn:#f0a53a;--bad:#ff8a80;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#1a1a19;--card:#262624;--card2:#3a3a37;--text:#f0efec;--text2:#c3c2b7;--muted:#898781;--border:#3a3a37;
+  --accent:#3987e5;--ok:#5fcf5f;--warn:#f0a53a;--bad:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:780px;margin:0 auto;padding-block:24px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;font-weight:500;margin:0 0 4px;text-wrap:balance}
+.lead{font-size:14px;color:var(--text2);margin:0 0 18px}
+
+/* home */
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 16px}
+.mi{display:flex;flex-direction:column;gap:6px;background:var(--card);border-radius:8px;padding:16px 18px;border-left:6px solid var(--c);color:inherit;text-decoration:none}
+.mi:hover{background:var(--card2)}
+.mi .t{font-size:17px;font-weight:500}
+.mi .d{font-size:13px;color:var(--text2);line-height:1.5;flex:1}
+.mi .go{font-size:13px;color:var(--accent);margin-top:4px}
+.back{display:inline-block;font-size:14px;color:var(--accent);text-decoration:none;margin:0 0 12px;padding:4px 0}
+.back:hover{text-decoration:underline}
+.back:focus-visible,.mi:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* shared */
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 12px;margin-top:16px}
+.grp{background:var(--card);border-radius:8px;padding:12px 16px;margin:0 0 12px}
+.gt{font-size:13px;color:var(--text2);margin:0 0 10px}
+.sl{display:grid;grid-template-columns:96px minmax(0,1fr) 100px;align-items:center;gap:10px;margin:0 0 8px}
+.sl:last-child{margin:0}
+.sl label{font-size:13px}
+.sl .v{font-size:13px;font-weight:500;text-align:right}
+input[type=range]{accent-color:var(--accent);width:100%;margin:0}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.sl .seg{grid-column:2/4;justify-self:start}
+.seg button{font:inherit;font-size:13px;padding:5px 14px;background:none;color:var(--text);border:0;cursor:pointer}
+.seg button+button{border-left:1px solid var(--border)}
+.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.eq{font-size:13px;line-height:1.8;color:var(--text2);background:var(--card);border-radius:8px;padding:12px 16px;margin:0 0 12px}
+.eq b{color:var(--text);font-weight:500}
+.eq .row{display:flex;gap:8px;margin:0 0 4px}
+.eq .row:last-child{margin:0}
+.eq .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;text-align:center;line-height:20px;margin-top:3px}
+.warn{font-size:13px;color:var(--bad);margin:0 0 8px;min-height:1px}
+.heroes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:0 0 8px}
+.hero{background:var(--card);border-radius:8px;padding:16px 20px}
+.hero .nm{font-size:14px;color:var(--text2);margin:0 0 2px}
+.hero .top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.hero .big{font-family:Georgia,"Times New Roman",serif;font-size:60px;line-height:1;font-weight:500}
+.hero .un{font-size:14px;color:var(--text2)}
+.hero .st{font-size:15px;font-weight:500;margin-top:6px;min-height:22px}
+.trk{position:relative;height:10px;background:var(--card2);border-radius:5px;margin:14px 0 6px}
+.trk.segs{display:flex;background:none;margin:12px 0 6px}
+.trk .seg2{height:100%}
+.trk .seg2:first-child{border-radius:5px 0 0 5px}
+.trk .seg2:last-child{border-radius:0 5px 5px 0}
+.nb{position:absolute;top:0;height:100%;background:var(--band);opacity:.4;border-radius:5px}
+.mk{position:absolute;top:-4px;width:4px;height:18px;background:var(--text);border-radius:2px;transform:translateX(-2px);box-shadow:0 0 0 1.5px var(--card)}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.ticks{position:relative;height:16px;font-size:11px;color:var(--muted)}
+.ticks span{position:absolute;transform:translateX(-50%)}
+.legend{font-size:12px;color:var(--text2);margin:0 0 16px}
+.sub{font-size:13px;color:var(--text2);margin:0 0 8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 12px}
+.card{background:var(--card);border-radius:8px;padding:12px 14px}
+.card .nm{font-size:13px;color:var(--text2)}
+.card .vl{font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1.1;font-weight:500;margin:2px 0}
+.card .u{font-size:12px;color:var(--text2)}
+.card .rg{font-size:11px;color:var(--muted)}
+.card .s{font-size:13px;margin-top:4px;min-height:20px}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 0 0}
+
+/* BMI */
+.bmi-res{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:16px 0 20px}
+.bmi-num{font-family:Georgia,"Times New Roman",serif;font-size:64px;line-height:1;font-weight:500}
+.bmi-cat{font-size:18px;font-weight:500}
+.bmi-pad{padding:0 9px}
+.bmi-scale{position:relative;padding-top:14px}
+.bmi-mk{position:absolute;top:0;left:50%;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid var(--text);transform:translateX(-7px)}
+.bmi-bar{display:flex;height:16px;border-radius:4px;overflow:hidden;gap:2px}
+.bmi-caps{display:flex;gap:2px;margin-top:6px}
+.bmi-cap{font-size:11px;color:var(--text2);text-align:center;line-height:1.3}
+.bmi-ticks{position:relative;height:16px;margin-top:2px;font-size:11px;color:var(--muted)}
+.bmi-ticks span{position:absolute;transform:translateX(-50%)}
+.bmi-hint{font-size:12px;color:var(--text2);text-align:center;margin-top:4px}
+.bmi-out{background:var(--card);border-radius:8px;padding:16px;margin:16px 0;font-size:14px;line-height:1.6}
+.bmi-out .s{color:var(--text2)}
+.bmi-out b{font-weight:500}
+.bmi-chips{display:flex;flex-wrap:wrap;gap:8px}
+.bmi-chip{flex:1;min-width:92px;display:flex;flex-direction:column;gap:2px;align-items:center;padding:8px 6px;font:inherit;font-size:13px;line-height:1.3;color:var(--text);background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer}
+.bmi-chip:hover{background:var(--card)}
+.bmi-chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bmi-chip b{font-weight:500;font-size:14px}
+.bmi-chip span{color:var(--text2);font-size:12px}
+
+/* GFR stages */
+.stg{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px;margin:0 0 8px}
+.stg .b{background:var(--card);border-radius:8px;padding:10px 10px 10px 12px;border-left:6px solid;opacity:.55;border-top:2px solid transparent;border-right:2px solid transparent;border-bottom:2px solid transparent}
+.stg .b[aria-current=true]{opacity:1;background:var(--card2);border-top-color:var(--accent);border-right-color:var(--accent);border-bottom-color:var(--accent)}
+.stg .g{font-size:18px;font-weight:500}
+.stg .r{font-size:12px;color:var(--text2)}
+.stg .t{font-size:12px;margin-top:4px;line-height:1.3}
+.stres{font-size:15px;font-weight:500;margin:0 0 4px}
+.stsub{font-size:12px;color:var(--text2);margin:0 0 16px;line-height:1.5}
+
+/* inotropes */
+.numin{width:68px;font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);text-align:right}
+.numin:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sl .v .numin{margin-right:4px}
+.hero.dr{border-left:6px solid var(--dc)}
+.hero .sm{font-size:13px;color:var(--text2);line-height:1.6;margin-top:6px}
+.hero .sm b{color:var(--text);font-weight:500}
+.sig{margin-top:32px;font-size:11px;line-height:1.5;color:var(--muted);opacity:.22;user-select:none}
+
+/* PE risk wizard */
+.pe-prog{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:16px 0 12px}
+.pe-prog button{min-width:0;hyphens:manual;overflow-wrap:anywhere;font:inherit;font-size:12px;line-height:1.25;padding:6px 4px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--text2);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.pe-prog button .k{width:20px;height:20px;border-radius:50%;background:var(--card2);color:var(--text2);font-size:12px;line-height:20px}
+.pe-prog button.done .k{background:var(--accent);color:#fff}
+.pe-prog button[aria-current=step]{border-color:var(--accent);color:var(--text);background:var(--card)}
+.pe-prog button.skip{opacity:.45}
+.pe-prog button:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ck{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--border);cursor:pointer;font-size:14px}
+.ck:first-child{border-top:0;padding-top:2px}
+.ck input{accent-color:var(--accent);width:18px;height:18px;margin:2px 0 0;flex:none}
+.ck .tx{flex:1;min-width:0}
+.ck .hint,.opt .hint{display:block;font-size:12px;color:var(--text2);line-height:1.45;margin-top:2px}
+.ck .pt{flex:none;font-size:13px;font-weight:500;color:var(--text2);font-variant-numeric:tabular-nums}
+.ck.off{opacity:.45;pointer-events:none}
+.opt{padding:4px 0 10px;border-bottom:1px solid var(--border);margin:0 0 4px}
+.opt .ol{font-size:14px;margin:0 0 6px}
+.opt .seg{flex-wrap:wrap}
+.opt.off{opacity:.45;pointer-events:none}
+.pe-nav{display:flex;justify-content:space-between;gap:12px;margin:4px 0 12px}
+.btn{font:inherit;font-size:14px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--text);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn[hidden]{display:none}
+.pe-info{font-size:13px;color:var(--text2);margin:0 0 10px}
+.pe-info b{color:var(--text);font-weight:500}
+.pe-cat{font-family:Georgia,"Times New Roman",serif;font-size:32px;line-height:1.15;font-weight:500;margin:2px 0 4px;text-wrap:balance}
+.rs{display:flex;gap:4px;align-items:flex-start;margin:14px 0 4px}
+.rs .c{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:8px;transition:flex-grow .25s ease}
+.rs .c[aria-current=true]{flex-grow:2.3}
+.rs .bar{height:96px;background:var(--rc);opacity:.28;clip-path:polygon(0 var(--a),100% var(--b),100% 100%,0 100%)}
+.rs .c:first-child .bar{border-radius:6px 0 0 6px}
+.rs .c:last-child .bar{border-radius:0 6px 6px 0}
+.rs .c[aria-current=true] .bar{opacity:1}
+.rs .lb{font-size:10.5px;line-height:1.25;color:var(--muted);hyphens:manual}
+.rs .c[aria-current=true] .lb{font-size:14.5px;letter-spacing:-.01em;line-height:1.2;font-weight:600;color:var(--text)}
+@media (min-width:560px){.rs .c[aria-current=true] .lb{font-size:19px}.rs .lb{font-size:12px}}
+@media (prefers-reduced-motion:reduce){.rs .c{transition:none}}
+.hd{display:grid;gap:8px}
+.hdb{display:flex;flex-direction:column;gap:3px;text-align:left;font:inherit;font-size:15px;font-weight:500;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer}
+.hdb .hint{font-size:12px;font-weight:400;color:var(--text2);line-height:1.45}
+.hdb:hover{border-color:var(--accent)}
+.hdb[aria-pressed=true]{border-color:var(--accent);background:var(--card2)}
+.hdb.sh[aria-pressed=true]{border-color:var(--bad)}
+.hdb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rx h4{font-size:14px;font-weight:500;margin:12px 0 4px}
+.rx ol{margin:0;padding-left:20px}
+.rx ol li{margin:0 0 5px}
+.rx .alert{margin:10px 0 0;padding:8px 10px;border-radius:6px;background:var(--card2);color:var(--bad);font-weight:500;font-size:13px}
+.rx{background:var(--card);border-radius:8px;padding:12px 16px;margin:0 0 12px;font-size:14px;line-height:1.55}
+.rx h3{font-size:15px;font-weight:500;margin:0 0 6px}
+.rx ul{margin:0;padding-left:18px}
+.rx li{margin:0 0 5px}
+.rx li:last-child{margin:0}
+.rx b{font-weight:500}
+.rx .dz{color:var(--text2);font-size:13px}
+.rx details{margin-top:8px;font-size:13px;color:var(--text2)}
+.rx summary{cursor:pointer;color:var(--accent)}
+.rx details p{margin:6px 0 0}
+
+/* SOFA + iPhone */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.numin{width:70px;font-size:16px}
+.sfm{display:flex;gap:3px;margin:8px 0 6px}
+.sfm i{flex:1;height:8px;border-radius:3px;background:var(--card2)}
+.sfn{font-size:12px;color:var(--text2);margin:6px 0 0;line-height:1.5}
+.sfn b{color:var(--text);font-weight:500}
+
+/* Nutrition */
+.fr{display:grid;grid-template-columns:minmax(0,1fr) auto 40px;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--border)}
+.fr.two{grid-template-columns:minmax(0,1fr) auto}
+.fr.first,.fr:first-child{border-top:0;padding-top:2px}
+.fr label{font-size:14px;min-width:0}
+.fr .hint{display:block;font-size:12px;color:var(--text2);line-height:1.45;margin-top:2px}
+.fr .cat{display:block;font-size:13px;font-weight:500;margin-top:2px;min-height:1px}
+.fr .fv{font-size:13px;color:var(--text2);white-space:nowrap;text-align:right}
+.fr .fv b{color:var(--text);font-weight:500;font-size:15px}
+.fr .pt{font-size:13px;font-weight:500;color:var(--text2);text-align:right;font-variant-numeric:tabular-nums}
+.fr .numin::placeholder{color:var(--muted)}
+.fr.col{display:block}
+.fr.col .nsel{margin-top:6px}
+.xp{margin:0 0 6px}
+.xp>summary{cursor:pointer;color:var(--accent);font-size:13px;padding:2px 0 6px;list-style:none}
+.xp>summary::-webkit-details-marker{display:none}
+.xp>summary::before{content:'▸ '}
+.xp[open]>summary::before{content:'▾ '}
+.xp>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.xpb{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.xpb .gt{margin:12px 0 8px}
+.xpb .gt:first-child{margin-top:0}
+.xpb .opt:last-child{border-bottom:0;margin:0;padding-bottom:0}
+.xpr{font-size:13px;margin:10px 0 0;padding-top:8px;border-top:1px solid var(--border);line-height:1.6;color:var(--text2)}
+.xpr b{color:var(--text);font-weight:500}
+.nsel{font:inherit;font-size:16px;width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)}
+.nsel:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.fpr{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--text2)}
+.nav-r{display:flex;gap:8px;margin-left:auto}
+.flw{display:flex;flex-direction:column;margin-top:8px}
+.fn{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-left:5px solid var(--fc,var(--border));border-radius:8px;padding:9px 12px;font-size:14px;line-height:1.45}
+.fn.q{border:1.5px dashed var(--accent)}
+.fn .k{flex:none;width:22px;height:22px;border-radius:50%;background:var(--card2);color:var(--text);font-size:12px;line-height:22px;text-align:center;margin-top:1px}
+.fn.q .k{background:var(--accent);color:#fff}
+.fn .tt{flex:1;min-width:0}
+.fn b{font-weight:500}
+.fn .rate{display:block;font-size:13px;color:var(--text2)}
+.fn ul{padding-left:18px;font-size:13px}
+.fo{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.yn{font-size:12.5px;padding:2px 9px;border-radius:10px;background:var(--card2);font-weight:500}
+.yn.y{color:var(--bad)}
+.yn.n{color:var(--ok)}
+.far{text-align:center;color:var(--muted);font-size:12px;line-height:1.2;padding:4px 0}
+.fsep{font-size:12px;color:var(--text2);margin:14px 0 6px;padding-top:10px;border-top:1px solid var(--border)}
+.sl2{display:grid;grid-template-columns:36px minmax(0,1fr) 36px;align-items:center;gap:6px 8px;margin:0 0 14px}
+.sl2:last-child{margin-bottom:4px}
+.sl2 .h{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sl2 label{font-size:14px}
+.sl2 .v{font-size:13px;color:var(--text2);white-space:nowrap;display:flex;align-items:center;gap:4px}
+.sl2 input[type=range]{height:32px}
+.sl2 .pm{font:inherit;font-size:18px;line-height:1;width:36px;height:32px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);cursor:pointer;padding:0;touch-action:manipulation}
+.sl2 .pm:active{background:var(--card2)}
+.sl2 .pm:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.xpb{padding:10px 10px}
+/* инотропы: скорость и доза */
+.dchips{display:flex;flex-wrap:wrap;gap:8px}
+.dchip{font:inherit;font-size:13px;padding:8px 12px;background:none;color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;line-height:1.3}
+.dchip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.dchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#d_volbox .seg button{padding:5px 9px;white-space:nowrap}
+.qchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.qchip{flex:1;min-width:150px;display:flex;flex-direction:column;gap:2px;align-items:center;padding:8px 6px;font:inherit;font-size:13px;line-height:1.3;color:var(--text);background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer}
+.qchip:hover{background:var(--card)}
+.qchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qchip b{font-weight:500;font-size:14px}
+.qchip span{color:var(--text2);font-size:12px}
+</style></head><body>
+<main class="wrap">
+
+<!-- HOME -->
+<section id="home" data-view data-title="Медицинские калькуляторы">
+  <h1>Медицинские калькуляторы</h1>
+  <p class="lead">Выберите калькулятор.</p>
+  <div class="menu">
+    <a class="mi" href="#bmi" style="--c:#0ca30c">
+      <span class="t">Индекс массы тела (ИМТ)</span>
+      <span class="d">Рост, вес, шкала ВОЗ и вес, соответствующий нужному ИМТ.</span>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="mi" href="#fick" style="--c:#2a78d6">
+      <span class="t">Сердечный индекс по Фику</span>
+      <span class="d">СИ, СВ, УО и УИ по гемоглобину, сатурации, росту, весу и ЧСС.</span>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="mi" href="#gfr" style="--c:#ec835a">
+      <span class="t">СКФ и стадия ХБП</span>
+      <span class="d">CKD-EPI 2021 и 2009, MDRD, Кокрофт–Голт и стадия ХБП.</span>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="mi" href="#ino" style="--c:#8a63d2">
+      <span class="t">Инотропы: сколько набрать (номограмма)</span>
+      <span class="d">Сколько мл адреналина, мезатона, норадреналина, допамина и добутамина набрать в шприц 50 мл по весу пациента.</span>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="mi" href="#idose" style="--c:#2f9e9e">
+      <span class="t">Инотропы: скорость и доза</span>
+      <span class="d">Доза в мкг/кг/мин при заданной скорости дозатора для шприца 50 или 20 мл и обратный расчёт скорости.</span>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="mi" href="#pe" style="--c:#d03b3b">
+      <span class="t">Риск ранней смерти при ТЭЛА</span>
+      <span class="d">Классификация пациентов с острой ЛЭ на основании риска ранней смерти. Тактика ведения.</span>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="mi" href="#sofa" style="--c:#6a5acd">
+      <span class="t">Шкала SOFA</span>
+      <span class="d">Органная дисфункция по шести системам, итоговый балл и ориентир по смертности.</span>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="mi" href="#nutr" style="--c:#1f9e8f">
+      <span class="t">Нутритивный статус</span>
+      <span class="d">NUTRIC (с APACHE II и SOFA), степень недостаточности питания, энергопотребность и потребность в белках, липидах и углеводах.</span>
+      <span class="go">Открыть →</span>
+    </a>
+  </div>
+  <p class="note">Учебные расчёты, не заменяют клинические решения.</p>
+  <div class="sig" aria-hidden="true">© @AlekseyKa78<br>© @Vysota_i_pulse</div>
+</section>
+
+<!-- BMI -->
+<section id="bmi" data-view data-title="Калькулятор ИМТ" hidden>
+  <a class="back" href="#">← Все калькуляторы</a>
+  <h1>Калькулятор индекса массы тела</h1>
+  <div class="grp" style="margin-top:16px"><div id="b_sl"></div></div>
+  <div class="bmi-res"><span class="bmi-num" id="b_bmi">22,5</span><span class="bmi-cat" id="b_cat">Норма</span></div>
+  <div class="bmi-pad">
+    <div class="bmi-scale">
+      <div class="bmi-mk" id="b_mk"></div>
+      <div class="bmi-bar">
+        <div style="flex:14;background:#2a78d6"></div>
+        <div style="flex:26;background:#0ca30c"></div>
+        <div style="flex:20;background:#fab219"></div>
+        <div style="flex:20;background:#ec835a"></div>
+        <div style="flex:20;background:#d03b3b"></div>
+      </div>
+      <div class="bmi-caps">
+        <div class="bmi-cap" style="flex:14">Дефицит</div>
+        <div class="bmi-cap" style="flex:26">Норма</div>
+        <div class="bmi-cap" style="flex:20">Избыток</div>
+        <div class="bmi-cap" style="flex:20">Ожирение I</div>
+        <div class="bmi-cap" style="flex:20">Ожирение II–III</div>
+      </div>
+      <div class="bmi-ticks">
+        <span style="left:0">15</span>
+        <span style="left:14%">18,5</span>
+        <span style="left:40%">25</span>
+        <span style="left:60%">30</span>
+        <span style="left:80%">35</span>
+        <span style="left:100%">40</span>
+      </div>
+    </div>
+  </div>
+  <input type="range" id="b_b" min="15" max="40" step="0.1" value="22.5" style="margin-top:6px" aria-label="Желаемый ИМТ">
+  <div class="bmi-hint">Двигайте ползунок по шкале, чтобы увидеть вес для нужного ИМТ</div>
+  <div class="bmi-out">
+    <span class="s">При росте </span><b id="b_rh"></b><span class="s"> ИМТ </span><b id="b_rb"></b><span class="s"> соответствует весу </span><b id="b_rw"></b>
+  </div>
+  <div class="sub">Вес на границах категорий для вашего роста (нажмите, чтобы перейти)</div>
+  <div class="bmi-chips" id="b_chips"></div>
+  <p class="note">Шкала ВОЗ для взрослых от 18 лет. ИМТ не учитывает мышечную массу, возраст и пол, поэтому это ориентир, а не диагноз и не цель.</p>
+</section>
+
+<!-- FICK -->
+<section id="fick" data-view data-title="Сердечный индекс по Фику" hidden>
+  <a class="back" href="#">← Все калькуляторы</a>
+  <h1>Сердечный индекс по методу Фика</h1>
+  <p class="lead">Двигайте ползунки: все промежуточные значения и результат пересчитываются сразу.</p>
+  <div class="cols" style="margin-top:0">
+    <div class="grp"><div class="gt">Газы крови</div><div id="f_g1"></div></div>
+    <div class="grp"><div class="gt">Размеры тела и пульс</div><div id="f_g2"></div></div>
+  </div>
+  <div class="eq" id="f_eq"></div>
+  <div class="warn" id="f_warn" role="status"></div>
+  <div class="heroes" id="f_heroes"></div>
+  <div class="sub">Остальные расчётные величины</div>
+  <div class="cards" id="f_cards"></div>
+  <p class="note">Учебный расчёт, не заменяет клиническое решение. VO₂ принят равным 125 мл/мин на м² площади тела, то есть не измерен: такое допущение даёт погрешность до 25%. Площадь тела считается по формуле Мостеллера. ЧСС не влияет на сердечный выброс и индекс, а только делит выброс на ударный объём. Растворённым в плазме кислородом пренебрегаем. Нормы ориентировочные для взрослых.</p>
+</section>
+
+<!-- GFR -->
+<section id="gfr" data-view data-title="СКФ и стадия ХБП" hidden>
+  <a class="back" href="#">← Все калькуляторы</a>
+  <h1>Скорость клубочковой фильтрации (СКФ)</h1>
+  <p class="lead">Двигайте ползунки: СКФ по четырём формулам пересчитывается сразу.</p>
+  <div class="cols" style="margin-top:0">
+    <div class="grp"><div class="gt">Анализ крови</div><div id="g_g1"></div></div>
+    <div class="grp"><div class="gt">Пациент</div><div id="g_g2"></div></div>
+  </div>
+  <div class="eq" id="g_eq"></div>
+  <div class="heroes" id="g_heroes"></div>
+  <div class="legend">Стадии ХБП по СКФ (мл/мин/1,73 м²): С1 ≥90 · С2 60–89 · С3а 45–59 · С3б 30–44 · С4 15–29 · С5 &lt;15</div>
+  <div class="sub">Остальные расчётные величины</div>
+  <div class="cards" id="g_cards"></div>
+  <div class="sub">Стадия ХБП</div>
+  <div class="stres" id="g_stres"></div>
+  <div class="stg" id="g_stg" role="list"></div>
+  <div class="stsub" id="g_stsub"></div>
+  <p class="note">Учебный расчёт, не заменяет клиническое решение. Формулы предназначены для взрослых от 18 лет с устойчивым уровнем креатинина; они неточны при острой почечной недостаточности, беременности, ампутациях, очень низкой или очень высокой мышечной массе. Расовые коэффициенты не используются. Стадия ХБП определяется по индексированной СКФ (на 1,73 м²) и, кроме значения СКФ, требует признаков поражения почек или снижения СКФ дольше 3 месяцев. Кокрофт–Голт даёт абсолютную СКФ в мл/мин по фактическому весу и применяется для подбора доз лекарств.</p>
+</section>
+
+<!-- INOTROPES -->
+<section id="ino" data-view data-title="Инотропы: сколько набрать (номограмма)" hidden>
+  <a class="back" href="#">← Все калькуляторы</a>
+  <h1>Инотропы: сколько набрать (номограмма)</h1>
+  <p class="lead">Введите вес: показано, сколько мл препарата набрать в шприц 50 мл, остальное добавить растворителем до 50 мл. Тогда скорость инфузии в мл/ч равна стандартной дозе.</p>
+  <div class="grp" style="margin-top:16px">
+    <div class="sl2">
+      <div class="h"><label for="i_wn">Вес пациента</label><span class="v"><input type="number" class="numin" id="i_wn" min="20" max="150" step="0.1" value="70" inputmode="decimal">кг</span></div>
+      <button type="button" class="pm" aria-label="Вес пациента: меньше">−</button><input type="range" id="i_w" min="20" max="150" step="1" value="70" aria-label="Вес пациента"><button type="button" class="pm" aria-label="Вес пациента: больше">+</button>
+    </div>
+  </div>
+  <div class="warn" id="i_warn" role="status"></div>
+  <div class="eq" id="i_eq"></div>
+  <div class="heroes" id="i_heroes"></div>
+  <p class="note">Расчёт по номограмме для шприца 50 мл: при скорости 1 мл/ч доза равна 1 мкг/кг/мин (добутамин, допамин), 0,1 мкг/кг/мин (норадреналин, мезатон) или 0,01 мкг/кг/мин (адреналин). Концентрации: адреналин 0,1%, мезатон 1%, норадреналин 0,2%, допамин и добутамин 4%. Добутамин 1,25% (12,5 мг/мл) пересчитан относительно 4% (40 мг/мл) в 3,2 раза. Приготовление первичного 4% раствора добутамина: 250 мг сухого вещества (1 флакон) развести в 6,25 мл физраствора или 5% глюкозы. Терапевтические диапазоны по таблице (Марино, Хенсли). Калькулятор рассчитан на вес 20–150 кг; вне этого диапазона расчёт выполняется по той же формуле, но возможна большая погрешность (у малых весов из-за округления объёмов в таблице). Растворитель выбирайте по инструкции к препарату. Учебный инструмент: перед введением сверяйте расчёт с протоколом отделения и проводите двойную проверку.</p>
+</section>
+
+<!-- INOTROPES 2 -->
+<section id="idose" data-view data-title="Инотропы: скорость и доза" hidden>
+  <a class="back" href="#">← Все калькуляторы</a>
+  <h1>Инотропы: скорость и доза</h1>
+  <p class="lead">Укажите вес, препарат, шприц и число ампул. Двигайте скорость дозатора, чтобы увидеть дозу, или двигайте дозу, чтобы увидеть скорость.</p>
+
+  <div class="grp"><div class="gt">Препарат</div><div class="dchips" id="d_chips"></div></div>
+
+  <div class="grp">
+    <div class="gt">Пациент и шприц</div>
+    <div id="d_g1"></div>
+    <div class="sl"><label>Шприц</label><div class="seg" role="group" aria-label="Объём шприца"><button type="button" id="d_s50" aria-pressed="true">50 мл</button><button type="button" id="d_s20" aria-pressed="false">20 мл</button></div></div>
+    <div id="d_g2"></div>
+    <div class="sl"><label>В ампуле</label><span id="d_volbox"></span><span class="v" id="d_cv"></span></div>
+    <div class="sfn" id="d_sy"></div>
+  </div>
+
+  <div class="grp"><div class="gt">Скорость и доза</div><div id="d_g3"></div></div>
+
+  <div class="warn" id="d_warn" role="status"></div>
+
+  <div class="heroes">
+    <div class="hero">
+      <div class="nm">Доза при текущей скорости</div>
+      <div class="top"><span class="big" id="d_dose">0</span><span class="un">мкг/кг/мин</span></div>
+      <div class="st" id="d_doses"></div>
+      <div class="trk"><div class="nb" id="d_nb"></div><div class="mk" id="d_mk"></div></div>
+      <div class="scale"><span>0</span><span id="d_rng"></span><span id="d_max"></span></div>
+    </div>
+    <div class="hero">
+      <div class="nm">Скорость дозатора</div>
+      <div class="top"><span class="big" id="d_rate">0</span><span class="un">мл/ч</span></div>
+      <div class="sm" id="d_rates"></div>
+    </div>
+  </div>
+
+  <div class="sub">Границы терапевтического диапазона для вашего веса (нажмите, чтобы перейти)</div>
+  <div class="qchips" id="d_q"></div>
+
+  <div class="eq" id="d_eq"></div>
+
+  <p class="note">Учебный расчёт. Шприц выбирается кнопками 50 или 20 мл. Концентрации: адреналин 0,1%, мезатон 1%, норадреналин 0,2%, допамин 4%, добутамин 1,25% или 4% (флакон 250 мг, растворённый в 6,25 мл). Объём ампулы взят по стандартным упаковкам: у норадреналина 2 мг/мл выбирается 4 или 8 мл, у остальных препаратов он фиксирован и показан справочно. Проверьте объём на своей упаковке. Доза округляется до сотых, скорость до 0,1 мл/ч, а доза при заданной вами дозе пересчитывается от округлённой скорости. Диапазоны доз по таблице (Марино, Хенсли). Перед введением сверяйте расчёт с протоколом отделения и проводите двойную проверку.</p>
+</section>
+
+<!-- PE RISK -->
+<section id="pe" data-view data-title="Риск ранней смерти при ТЭЛА" hidden>
+  <a class="back" href="#">← Все калькуляторы</a>
+  <h1>Риск ранней смерти при острой ТЭЛА</h1>
+  <p class="lead">Ответьте на вопросы по шагам: категория риска и тактика лечения появятся на последнем шаге. Вернуться к любому шагу можно по номеру вверху.</p>
+  <div class="pe-prog" id="p_prog" role="list"></div>
+
+  <div class="pe-step" id="p_s0">
+    <div class="grp">
+      <div class="gt">Шаг 1. Артериальное давление и гемодинамика</div>
+      <div id="p_shk"></div>
+    </div>
+    <div class="pe-info" id="p_i0"></div>
+  </div>
+
+  <div class="pe-step" id="p_s1" hidden>
+    <div class="grp">
+      <div class="gt">Шаг 2. Шкала PESI: пациент</div>
+      <div id="p_pt"></div>
+    </div>
+    <div class="grp">
+      <div class="gt">Сопутствующие заболевания и клинические признаки</div>
+      <div id="p_pesi"></div>
+    </div>
+    <div class="cards" id="p_sc"></div>
+  </div>
+
+  <div class="pe-step" id="p_s2" hidden>
+    <div class="grp">
+      <div class="gt">Шаг 3. Признаки дисфункции ПЖ при визуализации (ЭхоКГ или КТ-ангиография)</div>
+      <div id="p_img"></div>
+    </div>
+    <div class="pe-info" id="p_i2"></div>
+  </div>
+
+  <div class="pe-step" id="p_s3" hidden>
+    <div class="grp">
+      <div class="gt">Шаг 4. Сердечный биомаркер: тропонин</div>
+      <div id="p_bio"></div>
+    </div>
+    <div class="pe-info" id="p_i3"></div>
+  </div>
+
+  <div class="pe-step" id="p_s4" hidden>
+    <div class="hero dr" id="p_hero">
+      <div class="nm">Категория риска ранней (30-дневной) смерти</div>
+      <div class="rs" id="p_rs" role="list"></div>
+      <div class="sm" id="p_why"></div>
+    </div>
+    <div class="eq" id="p_eq"></div>
+    <div class="grp" id="p_wbox" hidden></div>
+    <div class="sub" id="p_rxh"></div>
+    <div id="p_rx"></div>
+  </div>
+
+  <div class="pe-nav">
+    <button type="button" class="btn" id="p_back">← Назад</button>
+    <button type="button" class="btn pri" id="p_next">Далее →</button>
+  </div>
+
+  <p class="note">Классификация по таблице «Классификация пациентов с острой ЛЭ на основании риска ранней смерти» (КР Минздрава РФ «Легочная эмболия», 2024; ESC 2019). PESI класса III–V и sPESI ≥1 указывают на повышенный риск 30-дневной смерти. Пациенты с PESI I–II или sPESI 0, но с признаками дисфункции ПЖ или повышенным тропонином, относятся к промежуточно-низкому риску. Пациенты с шоком или гипотензией не нуждаются в подсчёте PESI и оценке тропонина для отнесения к высокому риску. Дозы рассчитаны на вес, указанный на шаге 2, для взрослых без тяжёлой почечной недостаточности. Учебный инструмент: перед назначением сверяйте с действующими клиническими рекомендациями, инструкциями к препаратам и противопоказаниями.</p>
+</section>
+
+<!-- SOFA -->
+<section id="sofa" data-view data-title="Шкала SOFA" hidden>
+  <a class="back" href="#">← Все калькуляторы</a>
+  <h1>Шкала SOFA: органная дисфункция</h1>
+  <p class="lead">Двигайте ползунки: баллы по шести системам и итоговый SOFA пересчитываются сразу. Берите худшие значения за сутки.</p>
+  <div class="cols" style="margin-top:0">
+    <div>
+      <div class="grp"><div class="gt">Дыхание</div><div id="s_g1"></div><div class="sfn" id="s_pfn"></div><div id="s_ck" style="margin-top:8px"></div></div>
+      <div class="grp"><div class="gt">Свёртывание и печень</div><div id="s_g2"></div></div>
+      <div class="grp"><div class="gt">Нервная система: шкала комы Глазго (для взрослых)</div><div id="s_g3"></div><div class="sfn" id="s_gn"></div></div>
+    </div>
+    <div>
+      <div class="grp"><div class="gt">Кровообращение (дозы в мкг/кг/мин)</div><div id="s_g4"></div></div>
+      <div class="grp"><div class="gt">Почки</div><div id="s_g5"></div></div>
+    </div>
+  </div>
+
+  <div class="hero dr" id="s_hero" style="--dc:var(--ok)">
+    <div class="nm">Итоговый балл SOFA</div>
+    <div class="top"><span class="big" id="s_tot">0</span><span class="un">из 24</span></div>
+    <div class="st" id="s_st"></div>
+    <div class="trk segs" id="s_trk"><div class="mk" id="s_mk"></div></div>
+    <div class="ticks">
+      <span style="left:0;transform:none">0</span><span style="left:8.33%">2</span><span style="left:16.67%">4</span><span style="left:25%">6</span><span style="left:33.33%">8</span><span style="left:41.67%">10</span><span style="left:50%">12</span><span style="left:62.5%">15</span><span style="left:100%;transform:translateX(-100%)">24</span>
+    </div>
+    <div class="sm" id="s_mort"></div>
+    <div class="sm">SOFA ≥2 при подозрении на инфекцию: критерий органной дисфункции при сепсисе (Sepsis-3); оценивается как острое изменение от исходного уровня.</div>
+  </div>
+
+  <div class="sub">Баллы по системам</div>
+  <div class="cards" id="s_cards"></div>
+  <div class="eq" id="s_eq"></div>
+  <p class="note">Учебный расчёт, не заменяет клиническое решение. Критерии: Vincent et al., 1996 (SOFA), Sepsis-3 (2016). Для баллов используют худшее значение за сутки. Баллы 3 и 4 по дыханию ставятся только при респираторной поддержке. Шкала комы Глазго дана для взрослых; у детей используют адаптированные варианты. У седированных и интубированных пациентов обычно берут оценку до седации. Дозы катехоламинов указаны в мкг/кг/мин и учитываются при введении не менее часа. Для почек берётся худший из двух показателей: креатинин или диурез (меньше 200 мл в сутки даёт 4 балла, 200–500 мл даёт 3 балла). Смертность взята из когорты ОРИТ (Ferreira et al., 2001: при первой оценке и при максимальном SOFA) и в современной практике может отличаться.</p>
+</section>
+
+<!-- NUTRITION -->
+<section id="nutr" data-view data-title="Нутритивный статус" hidden>
+  <a class="back" href="#">← Все калькуляторы</a>
+  <h1>Нутритивный статус и метаболические потребности</h1>
+  <p class="lead">Три шага расчёта: риск по шкале NUTRIC, степень недостаточности питания и суточная потребность в энергии и нутриентах; четвёртый шаг — справка по противопоказаниям, схеме внедрения питания и осложнениям. Любой шаг можно пропустить или сразу перейти к нему по номеру вверху.</p>
+  <div class="grp" style="margin-top:16px"><div class="gt">Пациент (общие данные для всех шагов)</div><div id="n_pt"></div></div>
+  <div class="pe-prog" id="n_prog" role="list" style="grid-template-columns:repeat(4,minmax(0,1fr))"></div>
+
+  <div id="n_s0">
+    <div class="grp"><div class="gt">Шаг 1. Шкала NUTRIC: риск неблагоприятного исхода, связанный с питанием</div><div id="n_nu"></div></div>
+    <div class="hero dr" id="n_nh">
+      <div class="nm" id="n_nnm">mNUTRIC</div>
+      <div class="top"><span class="big" id="n_nt">0</span><span class="un" id="n_nun">из 9</span></div>
+      <div class="st" id="n_nst"></div>
+      <div class="sm" id="n_nsm"></div>
+    </div>
+    <div class="eq" id="n_neq" style="margin-top:12px"></div>
+  </div>
+
+  <div id="n_s1" hidden>
+    <div class="grp"><div class="gt">Шаг 2. Степень недостаточности питания. Пустое поле — показатель не оценивали</div><div id="n_mf"></div></div>
+    <div class="hero dr" id="n_mh">
+      <div class="nm">Степень недостаточности питания</div>
+      <div class="pe-cat" id="n_mc">—</div>
+      <div class="sm" id="n_msm"></div>
+    </div>
+    <div class="stg" id="n_mstg" role="list" style="margin-top:12px"></div>
+  </div>
+
+  <div id="n_s2" hidden>
+    <div class="grp"><div class="gt">Шаг 3. Метаболические потребности</div><div id="n_mm"></div></div>
+    <div class="hero dr" id="n_eh" style="--dc:var(--accent)">
+      <div class="nm" id="n_enm">Истинная энергопотребность</div>
+      <div class="top"><span class="big" id="n_ev">—</span><span class="un">ккал/сут</span></div>
+      <div class="sm" id="n_esm"></div>
+    </div>
+    <div class="sub" style="margin-top:12px">Потребность в нутриентах: белки 1/6, липиды 1/3, углеводы 1/2 энергии</div>
+    <div class="cards" id="n_mac"></div>
+    <div class="eq" id="n_eeq"></div>
+    <div class="rx" id="n_sum"></div>
+  </div>
+
+  <div id="n_s3" hidden>
+    <div class="rx">
+      <h3>Противопоказания к нутритивной поддержке</h3>
+      <h4>Общие</h4>
+      <ol>
+        <li>Тяжёлая некупируемая гипоксемия: PaO₂ менее 60 мм рт. ст. при возрастающих значениях FiO₂ (70% и более).</li>
+        <li>Рефрактерный шок, то есть признаки гипоперфузии и/или гиповолемии: мраморные конечности, симптом сосудистого пятна более 3 с, лактат более 3 ммоль/л, pH &lt;7,2, a–v ΔPCO₂ &gt;6 мм рт. ст.</li>
+        <li>Гиперкапния: PaCO₂ &gt;80 мм рт. ст.</li>
+        <li>Непереносимость сред для проведения нутритивной поддержки.</li>
+      </ol>
+      <h4>К парентеральному питанию</h4>
+      <ul>
+        <li>Гипергидратация</li>
+        <li>Коагулопатия потребления</li>
+        <li>Отёк лёгких</li>
+        <li>Декомпенсированная сердечная недостаточность</li>
+        <li>Кома неясной этиологии</li>
+        <li>Гипертриглицеридемия более 12 ммоль/л (для жировых эмульсий)</li>
+        <li>Тяжёлая печёночная и/или почечная недостаточность</li>
+      </ul>
+      <h4>К энтеральному питанию</h4>
+      <ul>
+        <li>Механическая кишечная непроходимость</li>
+        <li>Мезентериальная ишемия</li>
+        <li>Продолжающееся желудочно-кишечное кровотечение</li>
+        <li>Перфорация кишки или несостоятельность анастомоза</li>
+        <li>Высокий свищ тонкой кишки (возможно энтеральное питание через зонд, установленный ниже свища)</li>
+      </ul>
+    </div>
+
+    <div class="rx">
+      <h3>Схема внедрения ранней нутритивной поддержки</h3>
+      <div class="flw">
+        <div class="fn q"><span class="k">1</span><div class="tt"><b>Есть противопоказания к нутритивной поддержке?</b>
+          <div class="fo"><span class="yn y">Да → повторная оценка противопоказаний через 24 ч</span><span class="yn n">Нет → 2</span></div></div></div>
+        <div class="far">↓</div>
+        <div class="fn" style="--fc:#2a78d6"><span class="k">2</span><div class="tt"><b>ЭД типа Стандарт</b><span class="rate">25–30 мл/ч на 12 ч</span></div></div>
+        <div class="far">↓</div>
+        <div class="fn q"><span class="k">3</span><div class="tt"><b>Большой сброс по зонду/стоме и/или диарея?</b>
+          <div class="fo"><span class="yn n">Нет → 4</span><span class="yn y">Да → 6</span></div></div></div>
+        <div class="far">↓ нет</div>
+        <div class="fn" style="--fc:#2a78d6"><span class="k">4</span><div class="tt"><b>ЭД типа Стандарт</b><span class="rate">50–75 мл/ч на 12–16 ч</span></div></div>
+        <div class="far">↓</div>
+        <div class="fn" style="--fc:#0ca30c"><span class="k">5</span><div class="tt"><b>ЭД типа Стандарт + Энергия (Файбер)</b><span class="rate">75–100 мл/ч на 12–16 ч</span></div></div>
+        <div class="fsep">Если на шаге 3 большой сброс и/или диарея</div>
+        <div class="fn" style="--fc:#8a63d2"><span class="k">6</span><div class="tt"><b>ЭД типа Пептид</b><span class="rate">25–30 мл/ч на 12 ч</span></div></div>
+        <div class="far">↓</div>
+        <div class="fn q"><span class="k">7</span><div class="tt"><b>Большой сброс по зонду/стоме и/или диарея?</b>
+          <div class="fo"><span class="yn n">Нет → 8</span><span class="yn y">Да → 9</span></div></div></div>
+        <div class="far">↓ нет</div>
+        <div class="fn" style="--fc:#8a63d2"><span class="k">8</span><div class="tt"><b>ЭД типа Пептид</b><span class="rate">50–75 мл/ч на 12–16 ч, затем переход на шаг 4 (Стандарт 50–75 мл/ч)</span></div></div>
+        <div class="far">↓ да на шаге 7</div>
+        <div class="fn" style="--fc:#d03b3b"><span class="k">9</span><div class="tt"><b>Парентеральное питание (ПП)</b></div></div>
+      </div>
+      <p class="dz" style="margin:10px 0 0">ЭД — энтеральная диета (питательная смесь).</p>
+    </div>
+
+    <div class="rx">
+      <h3>Осложнения энтерального питания</h3>
+      <h4>Сброс по зонду: «правило трёх пятёрок»</h4>
+      <ol>
+        <li>Промыть зонд <b>5 мл</b> физиологического раствора.</li>
+        <li>На <b>5 минут</b> зонд закрыть.</li>
+        <li>На <b>5 минут</b> зонд открыть.</li>
+      </ol>
+      <p style="margin:6px 0 0">Если сброс по зонду большой — <b>уменьшить скорость введения питательной смеси вдвое</b>.</p>
+      <h4>Диарея: алгоритм ведения</h4>
+      <ul>
+        <li>Снизить объём энтерального питания на 50%</li>
+        <li>Снизить осмолярность готовой смеси (не более 300 мосмоль/л)</li>
+        <li>Включить в состав питания смеси типа Файбер</li>
+        <li>Добавить к терапии ферменты</li>
+      </ul>
+      <h4>Оценка ответа через 24–48 ч</h4>
+      <div class="cols" style="margin-top:6px;gap:8px">
+        <div class="fn" style="--fc:#0ca30c;display:block"><b>Ответ есть</b><ul style="margin-top:4px">
+          <li>Продолжить питание смесью типа Файбер 500–1000 мл/сут с постепенным увеличением объёма</li>
+          <li>Ферменты ещё 5–7 суток</li></ul></div>
+        <div class="fn" style="--fc:#d03b3b;display:block"><b>Ответа нет</b><ul style="margin-top:4px">
+          <li>Тест на цитотоксин</li>
+          <li>Минимальное (100–500 мл) энтеральное питание с низкой осмолярностью</li>
+          <li>Ванкомицин 250–500 мг каждые 6 ч per os либо метронидазол 500 мг каждые 8 ч per os (флакон антибиотика развести в стакане воды и ввести в зонд); возможно совместное применение</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pe-nav">
+    <button type="button" class="btn" id="n_back">← Назад</button>
+    <span class="nav-r"><button type="button" class="btn" id="n_skip">Пропустить</button><button type="button" class="btn pri" id="n_next">Далее →</button></span>
+  </div>
+
+  <p class="note">Учебный расчёт, не заменяет клиническое решение. NUTRIC: Heyland et al., 2011, без интерлейкина-6 (Rahman et al., 2016): высокий риск при ≥5 из 9; высокий балл означает, что пациент скорее выиграет от достижения целевой энергии и белка. APACHE II: Knaus et al., 1985; берутся худшие значения за первые 24 ч в ОРИТ, креатинин в мкмоль/л, оксигенация по A–aDO₂ при FiO₂ ≥50% и по PaO₂ при FiO₂ &lt;50%. Степень недостаточности питания определяется по сумме баллов (норма 0, лёгкая 1, средняя 2, тяжёлая 3 за каждый оценённый показатель): средний балл до 1,0 — лёгкая, до 2,0 — средняя, выше 2,0 — тяжёлая; альбумин, трансферрин и лимфоциты у пациентов ОРИТ сильно зависят от воспаления и гидратации, поэтому отражают тяжесть состояния не меньше, чем питание. Основной обмен рассчитан по Харрису–Бенедикту (по фактической массе, у пациентов с ожирением завышает потребность), энергопотребность = ОО × ФА × ТФ × ФП (по Лонгу); температурный фактор +0,1 на каждый градус выше 37 °C. Коэффициенты: фактор активности — постельный 1,1, полупостельный 1,2, ходячий 1,3; фактор повреждения — без осложнений и заболевания печени 1,0, после операции без осложнений и ВЗК 1,1, переломы, онкология и трансплантация 1,2, лейкемия, осложнённый послеоперационный период, отёчный панкреатит и несептическая инфекция 1,25, сепсис 1,3, перитонит и некротизирующий панкреатит 1,4, политравма 1,5, политравма с сепсисом 1,6, ожоги 1,7–2,0. Оценки ФА и ФП можно исправить вручную. Пациентам на ИВЛ для сравнения дополнительно показано уравнение Penn State 2003b (при возрасте ≥60 лет и ИМТ ≥30 — модифицированное, 2010). Непрямая калориметрия точнее любой формулы; в первые сутки острой фазы не превышайте 70% расчётной потребности и наращивайте питание постепенно.</p>
+</section>
+
+</main>
+
+<script>
+/* ---------- shared helpers ---------- */
+function fm(x,d){return x.toFixed(d).replace('.',',')}
+function nf(x){return String(x).replace('.',',')}
+function byId(id){return document.getElementById(id)}
+/* ползунок как в «Нутритивном статусе»: подпись и точное число сверху, кнопки − / + по бокам */
+function sl2Row(box,id,label,min,max,st,v,unit){
+  var r=document.createElement('div');r.className='sl2';
+  r.innerHTML='<div class="h"><label for="'+id+'n">'+label+'</label><span class="v"><input type="number" class="numin" id="'+id+'n" min="'+min+'" max="'+max+'" step="'+st+'" value="'+v+'" inputmode="decimal">'+(unit||'')+'</span></div>'+
+    '<button type="button" class="pm" aria-label="'+label+': меньше">−</button><input type="range" id="'+id+'" min="'+min+'" max="'+max+'" step="'+st+'" value="'+v+'" aria-label="'+label+'"><button type="button" class="pm" aria-label="'+label+': больше">+</button>';
+  box.appendChild(r);
+  var sl=byId(id),n=byId(id+'n'),bs=r.querySelectorAll('.pm');
+  function fire(){sl.dispatchEvent(new Event('input',{bubbles:true}))}
+  bs[0].onclick=function(){sl.stepDown();fire()};
+  bs[1].onclick=function(){sl.stepUp();fire()};
+  return {sl:sl,n:n,fire:fire};
+}
+function addSliders(P,cid,list){
+  var box=byId(cid),items=[];
+  function dec(sl){return (String(sl.step).split('.')[1]||'').length}
+  list.forEach(function(s){
+    var c=sl2Row(box,P+s.id,s.n,s.min,s.max,s.st,s.v,(s.u||'').trim());
+    c.n.oninput=function(){
+      var x=parseFloat(String(c.n.value).replace(',','.'));
+      if(!isFinite(x))return;
+      c.sl.value=Math.min(Math.max(x,s.min),s.max);c.fire();
+    };
+    c.n.onchange=function(){c.n.value=+(+c.sl.value).toFixed(dec(c.sl))};
+    items.push(c);
+  });
+  return function(){items.forEach(function(c){if(document.activeElement!==c.n)c.n.value=+(+c.sl.value).toFixed(dec(c.sl))})};
+}
+function listen(P,list,fn){list.forEach(function(s){byId(P+s.id).oninput=fn})}
+
+/* ---------- BMI ---------- */
+(function(){
+  var P='b_';function $(i){return byId(P+i)}
+  var S=[
+    {id:'h',n:'Рост',min:120,max:220,st:1,v:170,u:' см'},
+    {id:'w',n:'Вес',min:20,max:220,st:0.5,v:65,u:' кг'}
+  ];
+  var show=addSliders(P,'b_sl',S);
+  var H=$('h'),W=$('w'),B=$('b');
+  var marks=[18.5,25,30,35,40];
+  function fw(x){return Number.isInteger(x)?String(x):fm(x,1)}
+  var chips=$('chips');
+  marks.forEach(function(v){
+    var c=document.createElement('button');
+    c.className='bmi-chip';c.type='button';c.dataset.v=v;
+    c.onclick=function(){setBmi(v)};
+    chips.appendChild(c);
+  });
+  function render(b){
+    var h=+H.value,w=+W.value,m=h/100;
+    show();
+    $('bmi').textContent=fm(b,1);
+    var c;
+    if(b<18.5)c='Дефицит массы';
+    else if(b<25)c='Норма';
+    else if(b<30)c='Избыточная масса';
+    else if(b<35)c='Ожирение I степени';
+    else if(b<40)c='Ожирение II степени';
+    else c='Ожирение III степени';
+    $('cat').textContent=c;
+    $('mk').style.left=(Math.min(Math.max((b-15)/25,0),1)*100)+'%';
+    $('rh').textContent=h+' см';
+    $('rb').textContent=fm(b,1);
+    $('rw').textContent=fw(w)+' кг';
+    var cs=chips.children;
+    for(var i=0;i<cs.length;i++){
+      var v=+cs[i].dataset.v;
+      cs[i].innerHTML='<b>'+fm(v*m*m,1)+' кг</b><span>ИМТ '+fm(v,1)+'</span>';
+    }
+  }
+  function fromWeight(){
+    var m=+H.value/100,b=+W.value/(m*m);
+    B.value=Math.min(Math.max(b,15),40);
+    render(b);
+  }
+  function setBmi(v){
+    var m=+H.value/100;
+    W.value=Math.min(Math.max(Math.round(v*m*m*2)/2,20),220);
+    B.value=v;
+    render(+W.value/(m*m));
+  }
+  H.oninput=fromWeight;
+  W.oninput=fromWeight;
+  B.oninput=function(){setBmi(+B.value)};
+  fromWeight();
+})();
+
+/* ---------- FICK ---------- */
+(function(){
+  var P='f_';function $(i){return byId(P+i)}
+  var S1=[
+    {id:'hb',n:'Гемоглобин',min:50,max:200,st:1,v:140,u:' г/л'},
+    {id:'sa',n:'SaO₂',min:80,max:100,st:1,v:98,u:' %'},
+    {id:'sv',n:'SvO₂',min:30,max:90,st:1,v:75,u:' %'}
+  ];
+  var S2=[
+    {id:'h',n:'Рост',min:140,max:210,st:1,v:170,u:' см'},
+    {id:'w',n:'Вес',min:40,max:150,st:1,v:70,u:' кг'},
+    {id:'hr',n:'ЧСС',min:40,max:160,st:1,v:70,u:' уд/мин'}
+  ];
+  var sh1=addSliders(P,'f_g1',S1),sh2=addSliders(P,'f_g2',S2);
+  function v(i){return +$(i).value}
+  var MH=[
+    {k:'ci',n:'Сердечный индекс (СИ)',u:'л/мин/м²',d:2,max:6,lo:2.5,hi:4},
+    {k:'co',n:'Сердечный выброс (СВ)',u:'л/мин',d:1,max:12,lo:4,hi:8},
+    {k:'sv',n:'Ударный объём (УО)',u:'мл',d:0,max:150,lo:60,hi:100},
+    {k:'svi',n:'Ударный индекс (УИ)',u:'мл/м²',d:0,max:80,lo:33,hi:47}
+  ];
+  var M=[
+    {k:'bsa',n:'Площадь тела (ППТ)',u:'м²',d:2},
+    {k:'vo2',n:'Потребление O₂ (VO₂)',u:'мл/мин',d:0},
+    {k:'cao',n:'Содержание O₂ в артериальной крови (CaO₂)',u:'мл/л',d:0,max:300,lo:160,hi:220},
+    {k:'cvo',n:'Содержание O₂ в венозной крови (CvO₂)',u:'мл/л',d:0,max:300,lo:120,hi:160},
+    {k:'avr',n:'Артериовенозная разница (CaO₂ − CvO₂)',u:'мл/л',d:0,max:100,lo:35,hi:55}
+  ];
+  MH.forEach(function(m){
+    var c=document.createElement('div');c.className='hero';
+    c.innerHTML='<div class="nm">'+m.n+'</div><div class="top"><span class="big" id="'+P+m.k+'V">—</span><span class="un">'+m.u+'</span></div>'+
+    '<div class="st" id="'+P+m.k+'S"></div>'+
+    '<div class="trk"><div class="nb" style="left:'+(m.lo/m.max*100)+'%;width:'+((m.hi-m.lo)/m.max*100)+'%"></div><div class="mk" id="'+P+m.k+'M"></div></div>'+
+    '<div class="scale"><span>0</span><span>Норма '+nf(m.lo)+'–'+nf(m.hi)+'</span><span>'+m.max+'</span></div>';
+    $('heroes').appendChild(c);
+  });
+  M.forEach(function(m){
+    var c=document.createElement('div');c.className='card';
+    var norm=m.lo!==undefined;
+    c.innerHTML='<div class="nm">'+m.n+'</div><div class="vl" id="'+P+m.k+'V">—</div><div class="u">'+m.u+'</div>'+
+    (norm?'<div class="trk" style="height:8px"><div class="nb" style="left:'+(m.lo/m.max*100)+'%;width:'+((m.hi-m.lo)/m.max*100)+'%;border-radius:4px"></div><div class="mk" id="'+P+m.k+'M" style="top:-3px;height:14px"></div></div><div class="rg">Норма '+m.lo+'–'+m.hi+'</div><div class="s" id="'+P+m.k+'S"></div>':'');
+    $('cards').appendChild(c);
+  });
+  function status(el,x,lo,hi){
+    var l=x<lo,h=x>hi;
+    el.style.color=(l||h)?'var(--warn)':'var(--ok)';
+    el.textContent=l?'↓ Ниже нормы':h?'↑ Выше нормы':'✓ В норме';
+  }
+  function place(id,x,max){
+    var mk=$(id);mk.style.display='block';
+    mk.style.left=Math.min(Math.max(x/max,0),1)*100+'%';
+  }
+  function calc(){
+    sh1();sh2();
+    var hb=v('hb'),sa=v('sa'),sv=v('sv'),hr=v('hr');
+    var bsa=Math.sqrt(v('h')*v('w')/3600);
+    var vo2=125*bsa;
+    var cao=1.34*hb*sa/100;
+    var cvo=1.34*hb*sv/100;
+    var avr=cao-cvo;
+    var ok=avr>0;
+    var co=ok?vo2/avr:NaN;
+    var ci=ok?co/bsa:NaN;
+    var svol=ok?co*1000/hr:NaN;
+    var svi=ok?svol/bsa:NaN;
+    var r={bsa:bsa,vo2:vo2,cao:cao,cvo:cvo,avr:avr,co:co,ci:ci,sv:svol,svi:svi};
+    $('warn').textContent=ok?'':'SaO₂ должна быть выше SvO₂, иначе формула Фика неприменима.';
+    MH.concat(M).forEach(function(m){
+      var x=r[m.k];
+      var good=isFinite(x)&&x>=0;
+      $(m.k+'V').textContent=good?fm(x,m.d):'—';
+      if(m.lo!==undefined){
+        var mk=$(m.k+'M'),st=$(m.k+'S');
+        if(!good){mk.style.display='none';st.textContent='';return}
+        place(m.k+'M',x,m.max);status(st,x,m.lo,m.hi);
+      }
+    });
+    if(ok){
+      $('eq').innerHTML=
+        '<div class="row"><span class="n">1</span><span>ППТ = √(рост × вес ÷ 3600) = <b>'+fm(bsa,2)+' м²</b>, VO₂ = 125 × '+fm(bsa,2)+' = <b>'+fm(vo2,0)+' мл/мин</b></span></div>'+
+        '<div class="row"><span class="n">2</span><span>CaO₂ = 1,34 × '+hb+' × '+fm(sa/100,2)+' = <b>'+fm(cao,0)+' мл/л</b>, CvO₂ = 1,34 × '+hb+' × '+fm(sv/100,2)+' = <b>'+fm(cvo,0)+' мл/л</b></span></div>'+
+        '<div class="row"><span class="n">3</span><span>СВ = VO₂ ÷ (CaO₂ − CvO₂) = '+fm(vo2,0)+' ÷ '+fm(avr,0)+' = <b>'+fm(co,1)+' л/мин</b></span></div>'+
+        '<div class="row"><span class="n">4</span><span>СИ = СВ ÷ ППТ = '+fm(co,1)+' ÷ '+fm(bsa,2)+' = <b>'+fm(ci,2)+' л/мин/м²</b></span></div>'+
+        '<div class="row"><span class="n">5</span><span>УО = СВ ÷ ЧСС = '+fm(co,1)+' л/мин × 1000 ÷ '+hr+' уд/мин = <b>'+fm(svol,0)+' мл</b></span></div>'+
+        '<div class="row"><span class="n">6</span><span>УИ = УО ÷ ППТ = '+fm(svol,0)+' ÷ '+fm(bsa,2)+' = <b>'+fm(svi,0)+' мл/м²</b></span></div>';
+    }else{
+      $('eq').innerHTML='Расчёт невозможен при текущих значениях SaO₂ и SvO₂.';
+    }
+  }
+  listen(P,S1,calc);listen(P,S2,calc);
+  calc();
+})();
+
+/* ---------- GFR ---------- */
+(function(){
+  var P='g_';function $(i){return byId(P+i)}
+  var S1=[{id:'cr',n:'Креатинин',min:30,max:600,st:1,v:90,u:' мкмоль/л'}];
+  var S2=[
+    {id:'age',n:'Возраст',min:18,max:100,st:1,v:40,u:' лет'},
+    {id:'w',n:'Вес',min:40,max:150,st:1,v:70,u:' кг'},
+    {id:'h',n:'Рост',min:140,max:210,st:1,v:170,u:' см'}
+  ];
+  var sh1=addSliders(P,'g_g1',S1),sh2=addSliders(P,'g_g2',S2);
+  function v(i){return +$(i).value}
+  var female=false;
+  (function(){
+    var r=document.createElement('div');r.className='sl';
+    r.innerHTML='<label>Пол</label><div class="seg" role="group" aria-label="Пол"><button type="button" id="g_sM" aria-pressed="true">Мужской</button><button type="button" id="g_sF" aria-pressed="false">Женский</button></div>';
+    var box=$('g2');box.insertBefore(r,box.firstChild);
+  })();
+  $('sM').onclick=function(){female=false;$('sM').setAttribute('aria-pressed','true');$('sF').setAttribute('aria-pressed','false');calc()};
+  $('sF').onclick=function(){female=true;$('sF').setAttribute('aria-pressed','true');$('sM').setAttribute('aria-pressed','false');calc()};
+
+  var MH=[
+    {k:'e21',n:'CKD-EPI 2021',u:'мл/мин/1,73 м²',stage:true},
+    {k:'e09',n:'CKD-EPI 2009',u:'мл/мин/1,73 м²',stage:true},
+    {k:'mdrd',n:'MDRD',u:'мл/мин/1,73 м²',stage:true},
+    {k:'cg',n:'Кокрофт–Голт',u:'мл/мин',stage:false}
+  ];
+  var M=[
+    {k:'scr',n:'Креатинин',u:'мг/дл',d:2},
+    {k:'bsa',n:'Площадь тела (ППТ)',u:'м²',d:2},
+    {k:'cgn',n:'Кокрофт–Голт, приведённая к 1,73 м²',u:'мл/мин/1,73 м²',d:0},
+    {k:'a21',n:'CKD-EPI 2021, абсолютная',u:'мл/мин',d:0}
+  ];
+  var SEG=[
+    {f:10,c:'#d03b3b'},{f:10,c:'#ec835a'},{f:10,c:'#fab219'},
+    {f:10,c:'#b5cc3a'},{f:20,c:'#5fbf3a'},{f:40,c:'#0ca30c'}
+  ];
+  var ST=[
+    {g:'С1',r:'СКФ ≥90',t:'Высокая (оптимальная)',c:'#0ca30c'},
+    {g:'С2',r:'СКФ 60–89',t:'Незначительно снижена',c:'#5fbf3a'},
+    {g:'С3а',r:'СКФ 45–59',t:'Умеренно снижена',c:'#b5cc3a'},
+    {g:'С3б',r:'СКФ 30–44',t:'Существенно снижена',c:'#fab219'},
+    {g:'С4',r:'СКФ 15–29',t:'Резко снижена',c:'#ec835a'},
+    {g:'С5',r:'СКФ <15',t:'Терминальная ПН',c:'#d03b3b'}
+  ];
+  var MAXG=150;
+  var trackHtml=SEG.map(function(s){return '<div class="seg2" style="flex:'+s.f+';background:'+s.c+'"></div>'}).join('');
+  MH.forEach(function(m){
+    var c=document.createElement('div');c.className='hero';
+    c.innerHTML='<div class="nm">'+m.n+'</div><div class="top"><span class="big" id="'+P+m.k+'V">—</span><span class="un">'+m.u+'</span></div>'+
+    '<div class="st" id="'+P+m.k+'S"></div>'+
+    '<div class="trk segs">'+trackHtml+'<div class="mk" id="'+P+m.k+'M"></div></div>'+
+    '<div class="ticks"><span style="left:0;transform:none">0</span><span style="left:10%">15</span><span style="left:20%">30</span><span style="left:30%">45</span><span style="left:40%">60</span><span style="left:60%">90</span><span style="left:100%;transform:translateX(-100%)">150</span></div>';
+    $('heroes').appendChild(c);
+  });
+  M.forEach(function(m){
+    var c=document.createElement('div');c.className='card';
+    c.innerHTML='<div class="nm">'+m.n+'</div><div class="vl" id="'+P+m.k+'V">—</div><div class="u">'+m.u+'</div>';
+    $('cards').appendChild(c);
+  });
+  $('stg').innerHTML=ST.map(function(s){
+    return '<div class="b" role="listitem" id="'+P+'st_'+s.g+'" style="border-left-color:'+s.c+'"><div class="g">'+s.g+'</div><div class="r">'+s.r+'</div><div class="t">'+s.t+'</div></div>';
+  }).join('');
+  function stage(x){
+    if(x>=90)return{g:'С1',t:'высокая (оптимальная)',c:'var(--ok)'};
+    if(x>=60)return{g:'С2',t:'незначительно снижена',c:'var(--ok)'};
+    if(x>=45)return{g:'С3а',t:'умеренно снижена',c:'var(--warn)'};
+    if(x>=30)return{g:'С3б',t:'существенно снижена',c:'var(--warn)'};
+    if(x>=15)return{g:'С4',t:'резко снижена',c:'var(--bad)'};
+    return{g:'С5',t:'терминальная ПН',c:'var(--bad)'};
+  }
+  function calc(){
+    sh1();sh2();
+    var cr=v('cr'),age=v('age'),w=v('w'),h=v('h');
+    var scr=cr/88.4;
+    var bsa=Math.sqrt(h*w/3600);
+    var kap=female?0.7:0.9,ratio=scr/kap;
+    var mn=Math.min(ratio,1),mx=Math.max(ratio,1);
+    var al21=female?-0.241:-0.302,al09=female?-0.329:-0.411;
+    var e21=142*Math.pow(mn,al21)*Math.pow(mx,-1.2)*Math.pow(0.9938,age)*(female?1.012:1);
+    var e09=141*Math.pow(mn,al09)*Math.pow(mx,-1.209)*Math.pow(0.993,age)*(female?1.018:1);
+    var mdrd=175*Math.pow(scr,-1.154)*Math.pow(age,-0.203)*(female?0.742:1);
+    var cg=(140-age)*w/(72*scr)*(female?0.85:1);
+    var r={e21:e21,e09:e09,mdrd:mdrd,cg:cg,scr:scr,bsa:bsa,cgn:cg*1.73/bsa,a21:e21*bsa/1.73};
+
+    MH.forEach(function(m){
+      var x=r[m.k];
+      $(m.k+'V').textContent=fm(x,0);
+      $(m.k+'M').style.left=Math.min(Math.max(x/MAXG,0),1)*100+'%';
+      var st=$(m.k+'S');
+      if(m.stage){
+        var g=stage(x);
+        st.style.color=g.c;
+        st.textContent=g.g+' — '+g.t;
+      }else{
+        st.style.color='var(--text2)';
+        st.textContent='Не индексирована на ППТ, для дозирования лекарств';
+      }
+    });
+    M.forEach(function(m){$(m.k+'V').textContent=fm(r[m.k],m.d)});
+
+    var cur=stage(e21);
+    ST.forEach(function(s){
+      var el=$('st_'+s.g);
+      if(s.g===cur.g)el.setAttribute('aria-current','true');else el.removeAttribute('aria-current');
+    });
+    $('stres').style.color=cur.c;
+    $('stres').textContent='Стадия '+cur.g+' (CKD-EPI 2021, '+fm(e21,0)+' мл/мин/1,73 м²): '+cur.t;
+    $('stsub').textContent='По другим формулам: CKD-EPI 2009 — '+stage(e09).g+', MDRD — '+stage(mdrd).g+'. Стадии С1–С2 говорят о ХБП только при признаках поражения почек (например, альбуминурии); для С3–С5 достаточно снижения СКФ дольше 3 месяцев.';
+
+    var sx=female?' × 1,012':'';
+    $('eq').innerHTML=
+      '<div class="row"><span class="n">1</span><span>Креатинин: '+cr+' ÷ 88,4 = <b>'+fm(scr,2)+' мг/дл</b>. ППТ = √(рост × вес ÷ 3600) = <b>'+fm(bsa,2)+' м²</b></span></div>'+
+      '<div class="row"><span class="n">2</span><span>CKD-EPI 2021 = 142 × min('+fm(scr,2)+' ÷ '+nf(kap)+'; 1)<sup>'+nf(al21)+'</sup> × max('+fm(scr,2)+' ÷ '+nf(kap)+'; 1)<sup>−1,200</sup> × 0,9938<sup>'+age+'</sup>'+sx+' = <b>'+fm(e21,0)+'</b></span></div>'+
+      '<div class="row"><span class="n">3</span><span>CKD-EPI 2009 = 141 × min(…; 1)<sup>'+nf(al09)+'</sup> × max(…; 1)<sup>−1,209</sup> × 0,993<sup>'+age+'</sup>'+(female?' × 1,018':'')+' = <b>'+fm(e09,0)+'</b></span></div>'+
+      '<div class="row"><span class="n">4</span><span>MDRD = 175 × '+fm(scr,2)+'<sup>−1,154</sup> × '+age+'<sup>−0,203</sup>'+(female?' × 0,742':'')+' = <b>'+fm(mdrd,0)+'</b></span></div>'+
+      '<div class="row"><span class="n">5</span><span>Кокрофт–Голт = (140 − '+age+') × '+w+' ÷ (72 × '+fm(scr,2)+')'+(female?' × 0,85':'')+' = <b>'+fm(cg,0)+' мл/мин</b></span></div>';
+  }
+  listen(P,S1,calc);listen(P,S2,calc);
+  calc();
+})();
+
+/* ---------- INOTROPES ---------- */
+(function(){
+  var P='i_';function $(i){return byId(P+i)}
+  var Sl=$('w'),N=$('wn');
+  var ipm=Sl.parentNode.querySelectorAll('.pm');
+  ipm[0].onclick=function(){Sl.stepDown();Sl.oninput()};
+  ipm[1].onclick=function(){Sl.stepUp();Sl.oninput()};
+  // num/den: объём (мл) на 1 кг массы; mgkg: мг в шприце на 1 кг; unit: мкг/кг/мин при 1 мл/ч
+  var D=[
+    {k:'adr',n:'Адреналин 0,1%',c:'#d03b3b',num:3,den:100,dec:2,mgkg:0.03,unit:0.01,rng:[{lo:0.01,hi:0.5}]},
+    {k:'mez',n:'Мезатон 1%',c:'#e0a000',num:3,den:100,dec:2,mgkg:0.3,unit:0.1,rng:[{lo:0.3,hi:2}]},
+    {k:'nor',n:'Норадреналин 0,2%',c:'#2a78d6',num:3,den:20,dec:1,mgkg:0.3,unit:0.1,rng:[{lo:0.2,hi:5}]},
+    {k:'dd4',n:'Допамин / добутамин 4%',c:'#0ca30c',num:3,den:40,dec:2,mgkg:3,unit:1,rng:[{n:'Допамин',lo:1,hi:20},{n:'Добутамин',lo:2.5,hi:15}]},
+    {k:'db1',n:'Добутамин 1,25%',c:'#ec835a',num:6,den:25,dec:2,mgkg:3,unit:1,rng:[{lo:2.5,hi:15}],extra:'Пересчёт от 4%: объём × 3,2 (40 ÷ 12,5)'}
+  ];
+  function r3(x){return nf(Math.round(x*1000)/1000)}
+  D.forEach(function(d){
+    var c=document.createElement('div');c.className='hero dr';c.style.setProperty('--dc',d.c);
+    var rl=d.rng.map(function(r){
+      return (r.n?r.n:'Диапазон')+': '+nf(r.lo)+'–'+nf(r.hi)+' мкг/кг/мин = <b>'+r3(r.lo/d.unit)+'–'+r3(r.hi/d.unit)+' мл/ч</b>';
+    }).join('<br>');
+    c.innerHTML='<div class="nm">'+d.n+'</div><div class="top"><span class="big" id="'+P+d.k+'V">—</span><span class="un">мл</span></div>'+
+    '<div class="sm" id="'+P+d.k+'D"></div>'+
+    '<div class="sm">1 мл/ч = <b>'+nf(d.unit)+' мкг/кг/мин</b><br>'+rl+(d.extra?'<br>'+d.extra:'')+'</div>';
+    $('heroes').appendChild(c);
+  });
+  function getW(){var x=parseFloat(String(N.value).replace(',','.'));return isFinite(x)&&x>0?x:null}
+  function calc(w){
+    var wt=Math.round(w*10),over=false,vols={};
+    D.forEach(function(d){
+      var f=Math.pow(10,d.dec);
+      var vol=Math.floor(d.num*wt*f/(d.den*10)+0.5)/f;
+      vols[d.k]=vol;
+      if(vol>50)over=true;
+      var dil=Math.round((50-vol)*100)/100;
+      var mg=+(d.mgkg*wt/10).toFixed(2);
+      $(d.k+'V').textContent=fm(vol,d.dec);
+      $(d.k+'D').innerHTML=(dil>=0?'Растворитель: <b>'+fm(dil,d.dec)+' мл</b> до 50 мл':'<b>Объём больше 50 мл</b>')+'<br>В шприце: <b>'+nf(mg)+' мг</b>';
+    });
+    var msg=[];
+    if(over)msg.push('Для этого веса объём препарата превышает 50 мл: шприц 50 мл не подходит.');
+    if(w<20)msg.push('Вес ниже 20 кг: расчёт произведён по той же формуле, как и для веса больше 150 кг, но возможна большая погрешность.');
+    else if(w>150)msg.push('Вес выше 150 кг: расчёт произведён по той же формуле, сверьте с протоколом.');
+    $('warn').textContent=msg.join(' ');
+    var ws=nf(+w.toFixed(1));
+    var mgA=+(3*wt/10).toFixed(2),mgB=+(0.3*wt/10).toFixed(2),mgC=+(0.03*wt/10).toFixed(2);
+    $('eq').innerHTML=
+      '<div class="row"><span class="n">1</span><span>Правило: 1 мл/ч = стандартная доза. Для шприца 50 мл нужно <b>вес × 3 мг</b> (допамин, добутамин), <b>вес × 0,3 мг</b> (норадреналин, мезатон), <b>вес × 0,03 мг</b> (адреналин).</span></div>'+
+      '<div class="row"><span class="n">2</span><span>Вес '+ws+' кг: допамин и добутамин <b>'+nf(mgA)+' мг</b>, норадреналин и мезатон <b>'+nf(mgB)+' мг</b>, адреналин <b>'+nf(mgC)+' мг</b>.</span></div>'+
+      '<div class="row"><span class="n">3</span><span>Объём = мг ÷ концентрация (мг/мл). Допамин и добутамин 4%: '+nf(mgA)+' ÷ 40 = <b>'+fm(vols.dd4,2)+' мл</b>; добутамин 1,25%: '+nf(mgA)+' ÷ 12,5 = <b>'+fm(vols.db1,2)+' мл</b>.</span></div>';
+  }
+  Sl.oninput=function(){N.value=Sl.value;calc(+Sl.value)};
+  N.oninput=function(){var x=getW();if(x===null)return;Sl.value=Math.min(Math.max(x,20),150);calc(x)};
+  calc(70);
+})();
+
+/* ---------- INOTROPES 2: скорость и доза ---------- */
+(function(){
+  var P='d_';function $(i){return byId(P+i)}
+  // conc — мг/мл; vamp — объём ампулы, мл; lo/hi — терапевтический диапазон, мкг/кг/мин
+  var D=[
+    {k:'adr',n:'Адреналин 0,1%',conc:1,vamp:1,lo:0.01,hi:0.5,dmax:1,dstep:0.01},
+    {k:'mez',n:'Мезатон 1%',conc:10,vamp:1,lo:0.3,hi:2,dmax:3,dstep:0.05},
+    {k:'nor',n:'Норадреналин 0,2%',conc:2,vamp:4,vopts:[4,8],lo:0.2,hi:5,dmax:5,dstep:0.01},
+    {k:'dop',n:'Допамин 4%',conc:40,vamp:5,lo:1,hi:20,dmax:25,dstep:0.5},
+    {k:'db1',n:'Добутамин 1,25%',conc:12.5,vamp:10,lo:2.5,hi:15,dmax:20,dstep:0.5},
+    {k:'db4',n:'Добутамин 4% (флакон)',conc:40,vamp:6.25,lo:2.5,hi:15,dmax:20,dstep:0.5}
+  ];
+  var cur=2,syr=50,vamp=D[cur].vamp;
+  var chips=$('chips');
+  D.forEach(function(d,i){
+    var b=document.createElement('button');b.type='button';b.className='dchip';b.id=P+'c'+i;
+    b.textContent=d.n;b.setAttribute('aria-pressed',i===cur?'true':'false');
+    b.onclick=function(){pick(i)};
+    chips.appendChild(b);
+  });
+  var cw=sl2Row($('g1'),P+'w','Вес',20,150,1,70,'кг');
+  var ca=sl2Row($('g2'),P+'a','Ампулы',1,12,1,1,'амп.');
+  var cr=sl2Row($('g3'),P+'r','Скорость дозатора',0,100,0.1,5,'мл/ч');
+  var cd=sl2Row($('g3'),P+'d','Доза',0,D[cur].dmax,D[cur].dstep,0,'мкг/кг/мин');
+  var W=cw.sl,A=ca.sl,R=cr.sl,Ds=cd.sl;
+  function clamp(x,lo,hi){return Math.min(Math.max(x,lo),hi)}
+  function dfmt(x){return fm(x,2)}
+  function setN(n,val){if(document.activeElement!==n)n.value=val}
+  function pnum(n){var x=parseFloat(String(n.value).replace(',','.'));return isFinite(x)?x:null}
+
+  function syrCalc(){
+    var a=+A.value,vol=a*vamp,mg=vol*D[cur].conc,c=mg*1000/syr; // c — мкг/мл
+    return {a:a,vv:vamp,vol:vol,mg:mg,c:c};
+  }
+  function setAmpMax(){
+    var mx=Math.max(1,Math.min(20,Math.floor(syr/vamp)));
+    A.max=mx;if(+A.value>mx)A.value=mx;
+  }
+  // объём ампулы: у норадреналина две кнопки (4 и 8 мл), у остальных препаратов — только информация
+  function buildV(){
+    var box=$('volbox'),d=D[cur];box.innerHTML='';
+    if(d.vopts){
+      var g=document.createElement('div');g.className='seg';g.setAttribute('role','group');g.setAttribute('aria-label','Объём ампулы, мл');
+      d.vopts.forEach(function(v){
+        var b=document.createElement('button');b.type='button';b.textContent=nf(v)+' мл';
+        b.setAttribute('aria-pressed',v===vamp?'true':'false');
+        b.onclick=function(){vamp=v;buildV();setAmpMax();render(false)};
+        g.appendChild(b);
+      });
+      box.appendChild(g);
+    }else{
+      var t=document.createElement('span');t.style.fontWeight='500';t.textContent=nf(d.vamp)+' мл';box.appendChild(t);
+    }
+  }
+  function pick(i){
+    cur=i;
+    D.forEach(function(d,k){$('c'+k).setAttribute('aria-pressed',k===i?'true':'false')});
+    vamp=D[i].vamp;buildV();
+    A.value=1;setAmpMax();
+    Ds.max=D[i].dmax;Ds.step=D[i].dstep;
+    render(false);
+  }
+  function setSyr(v){
+    syr=v;
+    $('s50').setAttribute('aria-pressed',String(v===50));
+    $('s20').setAttribute('aria-pressed',String(v===20));
+    setAmpMax();render(false);
+  }
+
+  // fromDose: true — двигают дозу, скорость пересчитывается; exact — точное число, введённое в поле дозы
+  function render(fromDose,exact){
+    var d=D[cur],w=+W.value,s=syrCalc(),want=null;
+    if(fromDose){
+      want=(exact!==undefined&&exact!==null)?exact:+Ds.value;
+      R.value=clamp(Math.round(want*60*w/s.c*10)/10,0,100);
+    }
+    var rate=+R.value,dose=rate*s.c/(60*w);
+    if(!fromDose)Ds.value=clamp(dose,0,+Ds.max);
+    setN(cw.n,w);setN(ca.n,s.a);setN(cr.n,rate.toFixed(1));setN(cd.n,(fromDose?want:dose).toFixed(2));
+    $('cv').textContent=nf(d.conc)+' мг/мл';
+    $('sy').innerHTML='В шприце '+syr+' мл: <b>'+nf(+s.vol.toFixed(2))+' мл</b> препарата ('+s.a+' амп.), <b>'+nf(+s.mg.toFixed(2))+' мг</b>; растворитель до '+syr+' мл: <b>'+nf(+Math.max(syr-s.vol,0).toFixed(2))+' мл</b>; концентрация <b>'+nf(+s.c.toFixed(1))+' мкг/мл</b>';
+    $('dose').textContent=dfmt(dose);
+    $('rate').textContent=fm(rate,1);
+    var l=dose<d.lo,h=dose>d.hi,st=$('doses');
+    st.style.color=(l||h)?'var(--warn)':'var(--ok)';
+    st.textContent=l?'↓ Ниже диапазона':h?'↑ Выше диапазона':'✓ В диапазоне';
+    var mx=+Ds.max;
+    $('nb').style.left=(d.lo/mx*100)+'%';$('nb').style.width=(Math.min(d.hi,mx)-d.lo)/mx*100+'%';
+    $('mk').style.left=clamp(dose/mx,0,1)*100+'%';
+    $('rng').textContent='Диапазон '+nf(d.lo)+'–'+nf(d.hi);$('max').textContent=nf(mx);
+    $('rates').textContent=rate>0?'Шприц '+syr+' мл закончится через '+nf(+(syr/rate).toFixed(1))+' ч':'Инфузия остановлена';
+    var q=$('q');q.innerHTML='';
+    [['Нижняя граница',d.lo],['Верхняя граница',d.hi]].forEach(function(p){
+      var raw=p[1]*60*w/s.c,r=clamp(Math.round(raw*10)/10,0,100);
+      var b=document.createElement('button');b.type='button';b.className='qchip';
+      b.innerHTML='<b>'+fm(p[1],2)+' мкг/кг/мин</b><span>'+p[0]+(raw>100?' → нужно '+fm(raw,1)+' мл/ч (больше 100)':' → '+fm(r,1)+' мл/ч')+'</span>';
+      b.onclick=function(){Ds.value=clamp(p[1],0,+Ds.max);render(true,p[1])};
+      q.appendChild(b);
+    });
+    var msg=[];
+    if(s.vol>syr)msg.push('Объём препарата больше '+syr+' мл: этот шприц не подходит.');
+    $('warn').textContent=msg.join(' ');
+    $('eq').innerHTML=
+      '<div class="row"><span class="n">1</span><span>В шприце: '+s.a+' × '+nf(s.vv)+' мл = <b>'+nf(+s.vol.toFixed(2))+' мл</b> препарата, × '+nf(d.conc)+' мг/мл = <b>'+nf(+s.mg.toFixed(2))+' мг</b></span></div>'+
+      '<div class="row"><span class="n">2</span><span>Концентрация: '+nf(+s.mg.toFixed(2))+' мг × 1000 ÷ '+syr+' мл = <b>'+nf(+s.c.toFixed(1))+' мкг/мл</b></span></div>'+
+      '<div class="row"><span class="n">3</span><span>Доза = скорость × концентрация ÷ (60 × вес) = '+fm(rate,1)+' × '+nf(+s.c.toFixed(1))+' ÷ (60 × '+w+') = <b>'+dfmt(dose)+' мкг/кг/мин</b></span></div>'+
+      '<div class="row"><span class="n">4</span><span>Скорость для нужной дозы = доза × 60 × вес ÷ концентрация</span></div>';
+  }
+  W.oninput=function(){render(false)};
+  A.oninput=function(){render(false)};
+  R.oninput=function(){render(false)};
+  Ds.oninput=function(){render(true)};
+  cw.n.oninput=function(){var x=pnum(cw.n);if(x===null)return;W.value=clamp(x,20,150);render(false)};
+  ca.n.oninput=function(){var x=pnum(ca.n);if(x===null)return;A.value=clamp(x,1,+A.max);render(false)};
+  cr.n.oninput=function(){var x=pnum(cr.n);if(x===null)return;R.value=clamp(x,0,100);render(false)};
+  cd.n.oninput=function(){var x=pnum(cd.n);if(x===null)return;Ds.value=clamp(x,0,+Ds.max);render(true,x)};
+  [cw.n,ca.n,cr.n,cd.n].forEach(function(n){n.onchange=function(){render(false)}});
+  $('s50').onclick=function(){setSyr(50)};
+  $('s20').onclick=function(){setSyr(20)};
+  pick(cur);
+})();
+
+/* ---------- PE RISK (ТЭЛА) ---------- */
+(function(){
+  var P='p_';function $(i){return byId(P+i)}
+  var S={hd:'na',age:65,male:1,w:70,rv:'na',mc:0,dd:0,noimg:0,trop:'na'};
+  var step=0;
+  var NAMES=['АД','PESI','ЭхоКГ / КТ','Тропонин','Итог'];
+
+  var SHOCK_HINT='В том числе остановка кровообращения, СЛР. Обструктивный шок: САД &lt;90 мм рт. ст. или вазопрессоры для поддержания САД ≥90 мм рт. ст. при адекватной волемии, плюс гипоперфузия (нарушение сознания, холодная влажная кожа, олигурия или анурия, повышение лактата). Персистирующая гипотензия: САД &lt;90 мм рт. ст. или снижение САД на ≥40 мм рт. ст. дольше 15 мин, не связанное с аритмией, гиповолемией или сепсисом.';
+  var PI=[
+    {k:'ca',n:'Онкологическое заболевание',h:'активное или в анамнезе',p:30},
+    {k:'chf',n:'Хроническая сердечная недостаточность',p:10},
+    {k:'cld',n:'Хроническое заболевание лёгких',p:10},
+    {k:'hr',n:'ЧСС ≥110 уд/мин',p:20},
+    {k:'sbp',n:'САД &lt;100 мм рт. ст.',p:30},
+    {k:'rr',n:'ЧДД ≥30 в мин',p:20},
+    {k:'tt',n:'Температура тела &lt;36 °C',p:20},
+    {k:'ms',n:'Нарушение сознания',h:'дезориентация, оглушение, сопор, кома',p:60},
+    {k:'sat',n:'SpO₂ &lt;90%',h:'с кислородом или без',p:20}
+  ];
+  var IM=[
+    {k:'mc',n:'Синдром Мак-Коннелла',h:'Снижение сократимости ПЖ + гипокинезия свободной стенки ПЖ при сохранении нормального сокращения верхушки.'},
+    {k:'dd',n:'D-образная деформация ЛЖ',h:'Уплощение межжелудочковой перегородки в парастернальной позиции по короткой оси из-за перегрузки ПЖ давлением; ЛЖ на срезе принимает форму буквы D.'}
+  ];
+  PI.forEach(function(p){S[p.k]=0});
+
+  function ck(box,items){
+    items.forEach(function(it){
+      var l=document.createElement('label');l.className='ck';l.id=P+'l_'+it.k;
+      l.innerHTML='<input type="checkbox" id="'+P+it.k+'"><span class="tx">'+it.n+(it.h?'<span class="hint">'+it.h+'</span>':'')+'</span>'+(it.p!==undefined?'<span class="pt">+'+it.p+'</span>':'');
+      box.appendChild(l);
+      $(it.k).onchange=function(){S[it.k]=this.checked?1:0;update()};
+    });
+  }
+  function seg(box,key,label,opts,hint){
+    var d=document.createElement('div');d.className='opt';d.id=P+'o_'+key;
+    d.innerHTML='<div class="ol">'+label+'</div><div class="seg" role="group" aria-label="'+label.replace(/<[^>]+>/g,'')+'">'+
+      opts.map(function(o){return '<button type="button" data-v="'+o[0]+'" aria-pressed="'+(S[key]===o[0])+'">'+o[1]+'</button>'}).join('')+
+      '</div>'+(hint?'<span class="hint">'+hint+'</span>':'');
+    box.appendChild(d);
+    var bs=d.querySelectorAll('button');
+    bs.forEach(function(b){b.onclick=function(){
+      S[key]=b.dataset.v;bs.forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});update();
+    }});
+  }
+  function numSlider(box,key,label,min,max,unit){
+    var r=document.createElement('div');r.className='sl2';
+    r.innerHTML='<div class="h"><label for="'+P+key+'n">'+label+'</label><span class="v"><input type="number" class="numin" id="'+P+key+'n" min="'+min+'" max="'+max+'" step="1" value="'+S[key]+'" inputmode="numeric">'+unit+'</span></div>'+
+      '<button type="button" class="pm" aria-label="'+label+': меньше">−</button><input type="range" id="'+P+key+'" min="'+min+'" max="'+max+'" step="1" value="'+S[key]+'" aria-label="'+label+'"><button type="button" class="pm" aria-label="'+label+': больше">+</button>';
+    box.appendChild(r);
+    var sl=$(key),n=$(key+'n'),bs=r.querySelectorAll('.pm');
+    sl.oninput=function(){n.value=sl.value;S[key]=+sl.value;update()};
+    n.oninput=function(){var x=parseFloat(String(n.value).replace(',','.'));if(!isFinite(x)||x<=0)return;S[key]=x;sl.value=Math.min(Math.max(x,min),max);update()};
+    bs[0].onclick=function(){sl.stepDown();sl.oninput()};
+    bs[1].onclick=function(){sl.stepUp();sl.oninput()};
+  }
+
+  /* build steps */
+  $('shk').innerHTML='<div class="hd" role="group" aria-label="Гемодинамика">'+
+    '<button type="button" class="hdb" data-v="st" aria-pressed="false">Гемодинамика стабильная</button>'+
+    '<button type="button" class="hdb sh" data-v="sh" aria-pressed="false">Признаки шока<span class="hint">'+SHOCK_HINT+'</span></button></div>';
+  $('shk').querySelectorAll('.hdb').forEach(function(b){b.onclick=function(){
+    S.hd=b.dataset.v;
+    $('shk').querySelectorAll('.hdb').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});
+    go(S.hd==='sh'?4:1);
+  }});
+  numSlider($('pt'),'age','Возраст',18,100,'лет');
+  (function(){
+    var r=document.createElement('div');r.className='sl';
+    r.innerHTML='<label>Пол</label><div class="seg" role="group" aria-label="Пол"><button type="button" id="p_sM" aria-pressed="true">Мужской +10</button><button type="button" id="p_sF" aria-pressed="false">Женский</button></div>';
+    $('pt').appendChild(r);
+    $('sM').onclick=function(){S.male=1;$('sM').setAttribute('aria-pressed','true');$('sF').setAttribute('aria-pressed','false');update()};
+    $('sF').onclick=function(){S.male=0;$('sF').setAttribute('aria-pressed','true');$('sM').setAttribute('aria-pressed','false');update()};
+  })();
+  numSlider($('pt'),'w','Вес',30,200,'кг');
+  (function(){
+    var r=document.createElement('div');r.className='sl2';
+    r.innerHTML='<div class="h"><label for="p_w2n">Вес пациента</label><span class="v"><input type="number" class="numin" id="p_w2n" min="30" max="200" step="1" value="'+S.w+'" inputmode="numeric">кг</span></div>'+
+      '<button type="button" class="pm" aria-label="Вес пациента: меньше">−</button><input type="range" id="p_w2" min="30" max="200" step="1" value="'+S.w+'" aria-label="Вес пациента"><button type="button" class="pm" aria-label="Вес пациента: больше">+</button>';
+    $('wbox').appendChild(r);
+    function setW(x){S.w=x;$('w').value=Math.min(Math.max(x,30),200);$('wn').value=x;update()}
+    $('w2').oninput=function(){$('w2n').value=this.value;setW(+this.value)};
+    var wbs=r.querySelectorAll('.pm');
+    wbs[0].onclick=function(){$('w2').stepDown();$('w2').oninput()};
+    wbs[1].onclick=function(){$('w2').stepUp();$('w2').oninput()};
+    $('w2n').oninput=function(){var x=parseFloat(String(this.value).replace(',','.'));if(!isFinite(x)||x<=0)return;$('w2').value=Math.min(Math.max(x,30),200);setW(x)};
+  })();
+  ck($('pesi'),PI);
+  $('sc').innerHTML=
+    '<div class="card"><div class="nm">Сумма PESI</div><div class="vl" id="p_pv">—</div><div class="u">баллов (возраст в годах + признаки)</div></div>'+
+    '<div class="card"><div class="nm">Класс PESI</div><div class="vl" id="p_pc">—</div><div class="u" id="p_pm"></div><div class="s" id="p_ps"></div></div>'+
+    '<div class="card"><div class="nm">sPESI</div><div class="vl" id="p_sv">—</div><div class="u" id="p_sm"></div><div class="s" id="p_ss"></div></div>';
+
+  var imgBox=$('img');
+  ck(imgBox,[{k:'noimg',n:'ЭхоКГ и КТ-ангиография не выполнялись',h:'признаки дисфункции ПЖ будут считаться не оценёнными'}]);
+  seg(imgBox,'rv','Отношение ПЖ/ЛЖ',[['lt','&lt;1,0'],['ge','≥1,0'],['na','Не измеряли']],'Конечно-диастолические диаметры, апикальная 4-камерная позиция (ЭхоКГ) или КТ-ангиография; в части исследований порог 0,9.');
+  ck(imgBox,IM);
+
+  var bioBox=$('bio');
+  seg(bioBox,'trop','Тропонин I или T (в т. ч. высокочувствительный)',[['n','Норма'],['p','Повышен'],['na','Не определяли']],'Маркер повреждения миокарда.');
+
+  var prog=$('prog');
+  NAMES.forEach(function(n,i){
+    var b=document.createElement('button');b.type='button';b.id=P+'pg'+i;b.setAttribute('role','listitem');
+    b.innerHTML='<span class="k">'+(i+1)+'</span><span>'+n+'</span>';
+    b.onclick=function(){go(i)};
+    prog.appendChild(b);
+  });
+
+  /* logic */
+  function shocked(){return S.hd==='sh'}
+  function pesi(){
+    var pts=Math.round(S.age)+(S.male?10:0);
+    PI.forEach(function(p){if(S[p.k])pts+=p.p});
+    var c,m;
+    if(pts<=65){c='I';m='очень низкий риск, 30-дн. смертность 0–1,6%'}
+    else if(pts<=85){c='II';m='низкий риск, 1,7–3,5%'}
+    else if(pts<=105){c='III';m='умеренный риск, 3,2–7,1%'}
+    else if(pts<=125){c='IV';m='высокий риск, 4,0–11,4%'}
+    else {c='V';m='очень высокий риск, 10,0–24,5%'}
+    var sp=(S.age>80?1:0)+S.ca+((S.chf||S.cld)?1:0)+S.hr+S.sbp+S.sat;
+    return {pts:pts,cls:c,m:m,sp:sp,hi:(c!=='I'&&c!=='II')||sp>=1};
+  }
+  function imaging(){
+    if(S.noimg)return {pos:false,na:true,list:[]};
+    var l=[];
+    if(S.rv==='ge')l.push('ПЖ/ЛЖ ≥1,0');
+    if(S.mc)l.push('синдром Мак-Коннелла');
+    if(S.dd)l.push('D-образная деформация ЛЖ');
+    return {pos:l.length>0,na:S.rv==='na'&&!S.mc&&!S.dd,list:l};
+  }
+  function bio(){
+    var l=[];
+    if(S.trop==='p')l.push('тропонин повышен');
+    return {pos:l.length>0,na:S.trop==='na',list:l};
+  }
+  function risk(){
+    if(shocked())return 'high';
+    var p=pesi(),im=imaging(),b=bio();
+    if(p.hi)return (im.pos&&b.pos)?'ih':'il';
+    return (im.pos||b.pos)?'il':'low';
+  }
+  var RC={
+    high:{n:'Высокий',c:'#d03b3b'},
+    ih:{n:'Проме\u00ADжуточно-<br>высокий',c:'#ec835a'},
+    il:{n:'Проме\u00ADжуточно-<br>низкий',c:'#e0a000'},
+    low:{n:'Низкий',c:'#0ca30c'}
+  };
+  var SLOPE=[0,22,44,66,86];
+  $('rs').innerHTML=['high','ih','il','low'].map(function(k,i){
+    return '<div class="c" role="listitem" id="'+P+'r_'+k+'" style="--rc:'+RC[k].c+';--a:'+SLOPE[i]+'%;--b:'+SLOPE[i+1]+'%"><div class="bar"></div><div class="lb">'+RC[k].n+'</div></div>';
+  }).join('');
+
+  /* doses */
+  function D(){
+    var w=S.w;
+    var r=function(x,s){return Math.round(x/s)*s};
+    var fd=w<50?5:(w<=100?7.5:10);
+    return {
+      w:nf(+w.toFixed(1)),
+      ufhB:r(80*w,100),ufhI:r(18*w,10),
+      alt:Math.round(Math.min(0.6*w,50)),altCap:0.6*w>50,altRate:Math.round(Math.min(0.6*w,50))*4,w70:w>=65,max15:Math.round(1.5*w),
+      enox:Math.round(w),enox15:Math.round(1.5*w),
+      nad:r(86*w,50),nadMl:fm(86*w/9500,2),
+      dal:r(100*w,50),
+      fd:nf(fd)
+    };
+  }
+  function li(a){return '<ul>'+a.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'}
+  function box(h,body){return '<div class="rx"><h3'+(body?'':' style="margin:0"')+'>'+h+'</h3>'+body+'</div>'}
+  var CI='<details><summary>Противопоказания к тромболизису</summary>'+
+    '<p><b>Абсолютные:</b> геморрагический инсульт или инсульт неясного генеза в анамнезе; ишемический инсульт за последние 6 мес; новообразование ЦНС; большая травма, операция или ЧМТ за последние 3 нед; геморрагический диатез; активное кровотечение.</p>'+
+    '<p><b>Относительные:</b> ТИА за последние 6 мес; приём пероральных антикоагулянтов; беременность или первая неделя после родов; пункция некомпрессируемых сосудов; травматичная реанимация; рефрактерная АГ (САД &gt;180 мм рт. ст.); тяжёлое заболевание печени; инфекционный эндокардит; активная язвенная болезнь.</p></details>';
+  function lmwhList(d){
+    return [
+      'Эноксапарин <b>1 мг/кг п/к каждые 12 ч = '+d.enox+' мг</b> или 1,5 мг/кг 1 раз в сутки = '+d.enox15+' мг',
+      'Надропарин <b>86 МЕ анти-Ха/кг п/к каждые 12 ч = '+d.nad+' МЕ</b> (≈'+d.nadMl+' мл раствора 9500 МЕ/мл)',
+      'Далтепарин <b>100 МЕ/кг п/к каждые 12 ч = '+d.dal+' МЕ</b>',
+      'Фондапаринукс <b>'+d.fd+' мг п/к 1 раз в сутки</b> (5 мг при &lt;50 кг, 7,5 мг при 50–100 кг, 10 мг при &gt;100 кг)'
+    ];
+  }
+  function ufh(d){return 'НФГ в/в: болюс <b>80 ЕД/кг = '+d.ufhB+' ЕД</b>, затем <b>18 ЕД/кг/ч = '+d.ufhI+' ЕД/ч</b>; АЧТВ через 6 ч, цель — в 1,5–2,5 раза выше контроля'}
+  var DOAC='ПОАК: апиксабан <b>10 мг 2 раза в сутки 7 дней, затем 5 мг 2 раза</b>; ривароксабан <b>15 мг 2 раза в сутки 21 день, затем 20 мг 1 раз</b>. Дабигатран 150 мг 2 раза — после ≥5 дней парентеральной антикоагуляции. ПОАК не применяют при тяжёлой почечной недостаточности, беременности, антифосфолипидном синдроме';
+  function recs(k){
+    var d=D();
+    if(k==='high')return box('Показан системный тромболизис',
+        '<div class="dz">Алтеплаза (Актилизе), раствор 1 мг/мл: 50 мг сухого вещества на 50 мл растворителя</div>'+
+        '<h4>Схема 1. Стандартная, 100 мг за 2 ч</h4><ol>'+
+          '<li>Болюс <b>10 мг</b> в/в за 1–2 мин</li>'+
+          '<li>Инфузия <b>90 мг</b> в/в за 2 ч: <b>45 мг/ч = 45 мл/ч</b></li>'+
+          (d.w70?'':'<li>При весе &lt;65 кг суммарная доза не более <b>1,5 мг/кг = '+d.max15+' мг</b></li>')+
+        '</ol>'+
+        '<h4>Схема 2. Ускоренная, 0,6 мг/кг за 15 мин</h4><ol>'+
+          '<li>Инфузия <b>'+d.alt+' мг</b> в/в за 15 мин (максимум 50 мг'+(d.altCap?', достигнут':'')+'): <b>'+d.altRate+' мл/ч</b></li>'+
+        '</ol>'+
+        '<p class="dz" style="margin:8px 0 0">Наибольший эффект — в первые 48 ч от начала симптомов; тромболизис возможен у пациентов с симптомами до 6–14 дней</p>'+
+        '<p style="margin:10px 0 0"><b>Введение Актилизе сопровождается микроструйным введением гепарина</b></p>'+CI);
+    if(k==='ih')return box('Показан селективный тромболизис',
+        '<div class="dz">Алтеплаза (Актилизе)</div>'+
+        '<h4>Катетер-направленный тромболизис с фрагментацией тромбов</h4><ol>'+
+          '<li>Фрагментация тромбов</li>'+
+          '<li>Болюс: одностороннее поражение — <b>1 мг в поражённую ветвь</b>; двустороннее — <b>2 мг в ствол ЛА</b></li>'+
+          '<li>Микроструйное введение в течение <b>9 ч</b>: одностороннее — <b>1 мг/ч в ветвь</b>; двустороннее — <b>2 мг/ч в ствол</b></li>'+
+          '<li>Суммарная доза: <b>10 мг</b> при одностороннем, <b>20 мг</b> при двустороннем поражении</li>'+
+        '</ol>'+
+        '<h4>Ультразвук-ассистированный тромболизис (EKOS)</h4><ol>'+
+          '<li>Болюс <b>1 мг в каждую ветвь</b> интраоперационно</li>'+
+          '<li>Болюс <b>1 мг в каждую ветвь</b> в ОАР</li>'+
+          '<li>Инфузия: <b>7 мг Актилизе + физ. раствор до 35 мл</b> на 7 ч в каждую ветвь</li>'+
+          '<li>Охлаждение: физ. раствор <b>40 мл/ч в каждую ветвь</b></li>'+
+        '</ol>'+
+        '<p style="margin:10px 0 0"><b>Введение Актилизе сопровождается микроструйным введением гепарина</b> (катетер-направленный тромболизис и EKOS)</p>'+
+        '<p class="alert">Контролировать протокол РХМДиЛ!</p>'+CI);
+    return box('Тромболизис не показан','');
+  }
+
+  function renderResult(){
+    var k=risk(),rc=RC[k],p=pesi(),im=imaging(),b=bio(),sh=shocked();
+    $('hero').style.setProperty('--dc',rc.c);
+    var why={
+      high:'Есть признаки шока. Подсчёт PESI и тропонин для этой категории не нужны.',
+      ih:'PESI или sPESI повышены, есть признаки дисфункции ПЖ и повышен тропонин.',
+      il:p.hi?'PESI или sPESI повышены, но положителен не более чем один из критериев: дисфункция ПЖ или тропонин.':'PESI I–II и sPESI 0, но есть признак дисфункции ПЖ или повышен тропонин.',
+      low:'PESI I–II и sPESI 0, признаков дисфункции ПЖ и повышения тропонина нет (или они не оценивались).'
+    }[k];
+    $('why').textContent=why;
+    ['high','ih','il','low'].forEach(function(x){
+      var el=$('r_'+x);if(x===k)el.setAttribute('aria-current','true');else el.removeAttribute('aria-current');
+    });
+    function yn(v){return v?'<b style="color:var(--bad)">да</b>':'<b>нет</b>'}
+    $('eq').innerHTML=
+      '<div class="row"><span class="n">1</span><span>Признаки шока: '+(sh?'<b style="color:var(--bad)">да</b>':'<b>нет</b>')+'</span></div>'+
+      (sh?'':
+      '<div class="row"><span class="n">2</span><span>PESI: <b>'+p.pts+' баллов, класс '+p.cls+'</b>; sPESI <b>'+p.sp+'</b> → повышенный риск по шкале: '+yn(p.hi)+(sh?' (для высокого риска не требуется)':'')+'</span></div>'+
+      '<div class="row"><span class="n">3</span><span>Дисфункция ПЖ: '+(im.na?'<b>не оценена</b>':(im.pos?'<b style="color:var(--bad)">да</b> ('+im.list.join(', ')+')':'<b>нет</b>'))+'</span></div>'+
+      '<div class="row"><span class="n">4</span><span>Тропонин: '+(b.na?'<b>не определяли</b>':(b.pos?'<b style="color:var(--bad)">повышен</b>':'<b>в норме</b>'))+'</span></div>');
+    $('rxh').textContent='Показания к тромболизису (КР Минздрава РФ «Легочная эмболия», 2024)'+(k==='high'?'. Доза для веса '+D().w+' кг':'');
+    $('wbox').hidden=(k!=='high');
+    if(document.activeElement!==$('w2n')){$('w2n').value=S.w}
+    if(document.activeElement!==$('w2')){$('w2').value=Math.min(Math.max(S.w,30),200)}
+    $('rx').innerHTML=recs(k);
+  }
+
+  function update(){
+    var p=pesi(),sh=shocked();
+    $('pv').textContent=p.pts;
+    $('pc').textContent=p.cls;$('pm').textContent=p.m;
+    var hiC=p.cls!=='I'&&p.cls!=='II';
+    $('ps').style.color=hiC?'var(--warn)':'var(--ok)';
+    $('ps').textContent=hiC?'Класс III–V: риск повышен':'Класс I–II';
+    $('sv').textContent=p.sp;
+    $('sm').textContent=p.sp>=1?'30-дн. смертность ≈10,9%':'30-дн. смертность ≈1,0%';
+    $('ss').style.color=p.sp>=1?'var(--warn)':'var(--ok)';
+    $('ss').textContent=p.sp>=1?'sPESI ≥1: риск повышен':'sPESI 0';
+    $('i0').innerHTML=sh?'Выбраны признаки шока: это <b>высокий риск</b>.':(S.hd==='st'?'Гемодинамика стабильна: далее оценим PESI, ПЖ и тропонин.':'Выберите один вариант.');
+    var no=!!S.noimg;
+    ['o_rv','l_mc','l_dd'].forEach(function(id){$(id).classList.toggle('off',no)});
+    var im=imaging();
+    $('i2').innerHTML=im.na?'Дисфункция ПЖ не оценена.':(im.pos?'Признаки дисфункции ПЖ: <b>есть</b> ('+im.list.join(', ')+').':'Признаков дисфункции ПЖ <b>нет</b>.');
+    var b=bio();
+    $('i3').innerHTML=b.na?'Тропонин не определяли.':(b.pos?'Тропонин <b>повышен</b>.':'Тропонин <b>в норме</b>.');
+    for(var i=0;i<5;i++){
+      var pg=$('pg'+i);
+      pg.classList.toggle('skip',sh&&i>=1&&i<=3);
+      pg.classList.toggle('done',i<step);
+      if(i===step)pg.setAttribute('aria-current','step');else pg.removeAttribute('aria-current');
+    }
+    if(step===4)renderResult();
+  }
+  function go(n){
+    step=n;
+    for(var i=0;i<5;i++)$('s'+i).hidden=(i!==n);
+    $('back').hidden=(n===0);
+    $('next').hidden=(n===0);
+    $('next').textContent=n===3?'Показать итог →':(n===4?'Начать заново':'Далее →');
+    if(n===0&&shocked())$('next').textContent='Показать итог →';
+    update();
+    var top=$('prog').getBoundingClientRect().top;
+    if(top<0)$('prog').scrollIntoView({block:'start'});
+  }
+  $('next').onclick=function(){
+    if(step===4){reset();return}
+    if(step===0&&shocked())go(4);else go(step+1);
+  };
+  $('back').onclick=function(){
+    if(step===4&&shocked())go(0);else go(step-1);
+  };
+  function reset(){
+    Object.keys(S).forEach(function(k){
+      if(typeof S[k]==='number'&&k!=='age'&&k!=='w')S[k]=0;
+    });
+    S.male=1;S.rv='na';S.trop='na';S.hd='na';
+    $('shk').querySelectorAll('.hdb').forEach(function(x){x.setAttribute('aria-pressed','false')});
+    document.querySelectorAll('#pe input[type=checkbox]').forEach(function(c){c.checked=false});
+    document.querySelectorAll('#pe .opt').forEach(function(o){
+      o.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v==='na'))});
+    });
+    $('sM').setAttribute('aria-pressed','true');$('sF').setAttribute('aria-pressed','false');
+    go(0);
+  }
+  go(0);
+})();
+
+/* ---------- SOFA ---------- */
+(function(){
+  var P='s_';function $(i){return byId(P+i)}
+  var S1=[
+    {id:'pao',n:'PaO₂',min:30,max:500,st:1,v:95,u:' мм рт.ст.'},
+    {id:'fio',n:'FiO₂',min:21,max:100,st:1,v:21,u:' %'}
+  ];
+  var S2=[
+    {id:'plt',n:'Тромбоциты',min:5,max:500,st:1,v:250,u:' ×10⁹/л'},
+    {id:'bil',n:'Билирубин',min:2,max:400,st:1,v:12,u:' мкмоль/л'}
+  ];
+  var S3=[
+    {id:'ge',n:'Глаза (E)',min:1,max:4,st:1,v:4,u:''},
+    {id:'gv',n:'Речь (V)',min:1,max:5,st:1,v:5,u:''},
+    {id:'gm',n:'Движения (M)',min:1,max:6,st:1,v:6,u:''}
+  ];
+  // шкала комы Глазго для взрослых
+  var GE=['','нет открывания глаз','открывает на боль','открывает на голос','открывает спонтанно'];
+  var GV=['','нет речи','невнятные звуки, стоны','отдельные слова','спутанная речь, дезориентирован','ориентирован, отвечает чётко'];
+  var GM=['','нет ответа','патологическое разгибание (децеребрация)','патологическое сгибание (декортикация)','отдёргивает конечность на боль','локализует боль','выполняет команды'];
+  var S4=[
+    {id:'map',n:'Ср. АД',min:30,max:120,st:1,v:85,u:' мм рт.ст.'},
+    {id:'dop',n:'Допамин',min:0,max:25,st:0.5,v:0,u:''},
+    {id:'dob',n:'Добутамин',min:0,max:20,st:0.5,v:0,u:''},
+    {id:'nor',n:'Норадреналин',min:0,max:2,st:0.01,v:0,u:''},
+    {id:'epi',n:'Адреналин',min:0,max:2,st:0.01,v:0,u:''}
+  ];
+  var S5=[
+    {id:'cr',n:'Креатинин',min:30,max:800,st:1,v:90,u:' мкмоль/л'}
+  ];
+  var sh=[addSliders(P,'s_g1',S1),addSliders(P,'s_g2',S2),addSliders(P,'s_g3',S3),addSliders(P,'s_g4',S4),addSliders(P,'s_g5',S5)];
+  // диурез по категориям: 0 = <200, 1 = 200–500, 2 = >500 мл/сут
+  var dc=2;
+  (function(){
+    var r=document.createElement('div');r.className='sl';
+    r.innerHTML='<label>Диурез</label><div class="seg" role="group" aria-label="Суточный диурез, мл"><button type="button" id="s_d0" aria-pressed="false">&lt;200</button><button type="button" id="s_d1" aria-pressed="false">200–500</button><button type="button" id="s_d2" aria-pressed="true">&gt;500</button></div>';
+    byId('s_g5').appendChild(r);
+    var n=document.createElement('div');n.className='sfn';n.textContent='Суточный диурез, мл';
+    byId('s_g5').appendChild(n);
+  })();
+  function setDc(k){dc=k;for(var i=0;i<3;i++)byId('s_d'+i).setAttribute('aria-pressed',i===k?'true':'false');calc()}
+  (function(){
+    var l=document.createElement('label');l.className='ck';
+    l.innerHTML='<input type="checkbox" id="s_sup"><span class="tx">Респираторная поддержка (ИВЛ)<span class="hint">Баллы 3 и 4 по дыханию ставятся только при респираторной поддержке</span></span>';
+    byId('s_ck').appendChild(l);
+  })();
+  var COL=['#0ca30c','#b5cc3a','#fab219','#ec835a','#d03b3b'];
+  var ORG=[
+    {k:'resp',n:'Дыхание'},{k:'coag',n:'Свёртывание'},{k:'liv',n:'Печень'},
+    {k:'cv',n:'Кровообращение'},{k:'cns',n:'Нервная система'},{k:'ren',n:'Почки'}
+  ];
+  ORG.forEach(function(o){
+    var c=document.createElement('div');c.className='card';
+    c.innerHTML='<div class="nm">'+o.n+'</div><div class="vl" id="'+P+o.k+'P">0</div><div class="u">из 4 баллов</div>'+
+      '<div class="sfm" id="'+P+o.k+'M"><i></i><i></i><i></i><i></i></div><div class="rg" id="'+P+o.k+'T"></div>';
+    $('cards').appendChild(c);
+  });
+  var SEG=[{f:2,c:'#0ca30c'},{f:2,c:'#5fbf3a'},{f:2,c:'#b5cc3a'},{f:2,c:'#fab219'},{f:2,c:'#f0a53a'},{f:2,c:'#ec835a'},{f:3,c:'#e34948'},{f:9,c:'#d03b3b'}];
+  var trk=$('trk');
+  SEG.forEach(function(s){var d=document.createElement('div');d.className='seg2';d.style.flex=s.f;d.style.background=s.c;trk.insertBefore(d,$('mk'))});
+  // смертность в ОРИТ по Ferreira (2001): при первой оценке / при максимальном SOFA
+  var MORT=[
+    {to:1,a:'0',b:'0'},{to:3,a:'6,4',b:'1,5'},{to:5,a:'20,2',b:'6,7'},{to:7,a:'21,5',b:'18,2'},
+    {to:9,a:'33,3',b:'26,3'},{to:11,a:'50,0',b:'45,8'},{to:14,a:'95,2',b:'80,0'},{to:24,a:'95,2',b:'89,7'}
+  ];
+  function v(i){return +$(i).value}
+  function sResp(pf,sup){if(pf>=400)return 0;if(pf>=300)return 1;if(pf>=200)return 2;if(pf>=100)return sup?3:2;return sup?4:2}
+  function sPlt(x){return x>=150?0:x>=100?1:x>=50?2:x>=20?3:4}
+  function sBil(x){return x<20?0:x<33?1:x<102?2:x<=204?3:4}
+  function sGcs(g){return g>=15?0:g>=13?1:g>=10?2:g>=6?3:4}
+  function sCv(map,dop,dob,nor,epi){
+    var p=map<70?1:0;
+    if((dop>0&&dop<=5)||dob>0)p=Math.max(p,2);
+    if(dop>5||(epi>0&&epi<=0.1)||(nor>0&&nor<=0.1))p=Math.max(p,3);
+    if(dop>15||epi>0.1||nor>0.1)p=Math.max(p,4);
+    return p;
+  }
+  function sRen(cr,dc){
+    var a=cr<110?0:cr<171?1:cr<300?2:cr<=440?3:4;
+    var b=dc===0?4:dc===1?3:0;
+    return Math.max(a,b);
+  }
+  function calc(){
+    sh.forEach(function(f){f()});
+    var sup=$('sup').checked;
+    var pao=v('pao'),fio=v('fio'),ge=v('ge'),gv=v('gv'),gm=v('gm'),plt=v('plt'),bil=v('bil'),map=v('map'),dop=v('dop'),dob=v('dob'),nor=v('nor'),epi=v('epi'),cr=v('cr');
+    var pf=Math.floor(pao*100/fio),gcs=ge+gv+gm;
+    var pts={resp:sResp(pf,sup),coag:sPlt(plt),liv:sBil(bil),cv:sCv(map,dop,dob,nor,epi),cns:sGcs(gcs),ren:sRen(cr,dc)};
+    var drugs=[];
+    if(dop>0)drugs.push('допамин '+nf(dop));
+    if(dob>0)drugs.push('добутамин '+nf(dob));
+    if(nor>0)drugs.push('норадреналин '+nf(nor));
+    if(epi>0)drugs.push('адреналин '+nf(epi));
+    var txt={
+      resp:'PaO₂ '+pao+' / FiO₂ '+fio+'% = '+pf+(sup?', на поддержке':', без поддержки'),
+      coag:'тромбоциты '+plt+' ×10⁹/л',
+      liv:'билирубин '+bil+' мкмоль/л',
+      cv:'ср. АД '+map+(drugs.length?', '+drugs.join(', '):', без катехоламинов'),
+      cns:'ШКГ '+gcs+' (E'+ge+' V'+gv+' M'+gm+')',
+      ren:'креатинин '+cr+(dc<2?', диурез '+(dc===0?'<200':'200–500')+' мл/сут':'')
+    };
+    $('pfn').innerHTML='PaO₂/FiO₂ = <b>'+pf+' мм рт.ст.</b>';
+    $('gn').innerHTML='<b>E'+ge+'</b>: '+GE[ge]+'<br><b>V'+gv+'</b>: '+GV[gv]+'<br><b>M'+gm+'</b>: '+GM[gm]+'<br>Сумма <b>'+gcs+'</b> из 15';
+    var tot=0,parts=[];
+    ORG.forEach(function(o){
+      var p=pts[o.k];tot+=p;parts.push(p);
+      $(o.k+'P').textContent=p;$(o.k+'P').style.color=p>0?COL[p]:'';
+      var bl=$(o.k+'M').children;
+      for(var i=0;i<bl.length;i++)bl[i].style.background=i<p?COL[p]:'';
+      $(o.k+'T').textContent=txt[o.k];
+    });
+    $('tot').textContent=tot;
+    var col=tot<2?'var(--ok)':tot<6?'var(--warn)':'var(--bad)';
+    $('hero').style.setProperty('--dc',col);
+    $('st').style.color=col;
+    $('st').textContent=tot<2?'Выраженной органной дисфункции нет':tot<6?'Органная дисфункция (SOFA ≥2)':tot<12?'Выраженная органная дисфункция':'Тяжёлая полиорганная недостаточность';
+    $('mk').style.left=Math.min(tot/24,1)*100+'%';
+    var m=MORT.filter(function(x){return tot<=x.to})[0];
+    $('mort').innerHTML='Смертность в ОРИТ (Ferreira, 2001): при первой оценке <b>'+m.a+'%</b>, при максимальном SOFA <b>'+m.b+'%</b>';
+    var rows='';
+    ORG.forEach(function(o,i){rows+='<div class="row"><span class="n">'+(i+1)+'</span><span>'+o.n+': '+txt[o.k]+' → <b>'+pts[o.k]+'</b></span></div>'});
+    rows+='<div class="row"><span class="n">∑</span><span>SOFA = '+parts.join(' + ')+' = <b>'+tot+'</b></span></div>';
+    $('eq').innerHTML=rows;
+  }
+  listen(P,S1,calc);listen(P,S2,calc);listen(P,S3,calc);listen(P,S4,calc);listen(P,S5,calc);
+  $('sup').onchange=calc;
+  for(var q=0;q<3;q++)(function(k){byId('s_d'+k).onclick=function(){setDc(k)}})(q);
+  calc();
+})();
+
+/* ---------- NUTRITION: NUTRIC → недостаточность питания → метаболические потребности ---------- */
+(function(){
+  var P='n_';function $(i){return byId(P+i)}
+  var S={male:1,age:60,h:170,w:70,vent:0,fa:1,t:36.6,fp:1,ve:8,chr:0,vaso:0,dc:2};
+  var stt=['todo','todo','todo','todo'],step=0,apAuto=false,soAuto=false;
+  var NAMES=['NUTRIC','Недоста­точность питания','Метаболи­ческие потреб­ности','Справка'];
+  function num(el){var s=String(el.value).trim().replace(',','.');if(s==='')return null;var x=parseFloat(s);return isFinite(x)?x:null}
+  function f1(x){return nf(+x.toFixed(1))}
+  function f0(x){return String(Math.round(x))}
+
+  /* --- конструкторы --- */
+  function numSlider(box,key,label,min,max,stp,unit){
+    var r=document.createElement('div');r.className='sl2';
+    r.innerHTML='<div class="h"><label for="'+P+key+'n">'+label+'</label><span class="v"><input type="number" class="numin" id="'+P+key+'n" min="'+min+'" max="'+max+'" step="'+stp+'" value="'+S[key]+'" inputmode="decimal">'+unit+'</span></div>'+
+      '<button type="button" class="pm" aria-label="'+label+': меньше">−</button><input type="range" id="'+P+key+'" min="'+min+'" max="'+max+'" step="'+stp+'" value="'+S[key]+'" aria-label="'+label+'"><button type="button" class="pm" aria-label="'+label+': больше">+</button>';
+    box.appendChild(r);
+    var sl=$(key),n=$(key+'n'),bs=r.querySelectorAll('.pm'),dec=(String(stp).split('.')[1]||'').length;
+    function fromSl(){S[key]=+sl.value;n.value=+S[key].toFixed(dec);update()}
+    sl.oninput=fromSl;
+    n.oninput=function(){var x=num(n);if(x===null||x<=0)return;S[key]=x;sl.value=Math.min(Math.max(x,min),max);update()};
+    bs[0].onclick=function(){sl.value=Math.max(+sl.value-stp,min);fromSl()};
+    bs[1].onclick=function(){sl.value=Math.min(+sl.value+stp,max);fromSl()};
+  }
+  function seg(box,key,label,opts,hint,cb){
+    var d=document.createElement('div');d.className='opt';
+    d.innerHTML=(label?'<div class="ol">'+label+'</div>':'')+'<div class="seg" role="group" aria-label="'+(label||'').replace(/<[^>]+>/g,'')+'">'+
+      opts.map(function(o){return '<button type="button" data-v="'+o[0]+'" aria-pressed="'+(S[key]===o[0])+'">'+o[1]+'</button>'}).join('')+
+      '</div>'+(hint?'<span class="hint">'+hint+'</span>':'');
+    box.appendChild(d);
+    var bs=d.querySelectorAll('button');
+    bs.forEach(function(b){b.onclick=function(){
+      S[key]=+b.dataset.v;bs.forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});if(cb)cb();update();
+    }});
+    return d;
+  }
+  function frow(box,id,label,hint,unit,attrs,two){
+    var r=document.createElement('div');r.className='fr'+(two?' two':'');
+    r.innerHTML='<label for="'+P+id+'">'+label+(hint?'<span class="hint">'+hint+'</span>':'')+(two?'<span class="cat" id="'+P+id+'c"></span>':'')+'</label>'+
+      '<span class="fv"><input type="number" class="numin" id="'+P+id+'" '+attrs+' placeholder="—">'+(unit?' '+unit:'')+'</span>'+(two?'':'<span class="pt" id="'+P+id+'p"></span>');
+    box.appendChild(r);
+    $(id).oninput=update;
+    return r;
+  }
+  /* широкий ползунок: подпись и точное число сверху, кнопки − / + по бокам */
+  function addSl2(Px,cid,list,fn){
+    var box=byId(cid);
+    list.forEach(function(s){
+      var id=Px+s.id,r=document.createElement('div');r.className='sl2';
+      r.innerHTML='<div class="h"><label for="'+id+'n">'+s.n+'</label><span class="v"><input type="number" class="numin" id="'+id+'n" min="'+s.min+'" max="'+s.max+'" step="'+s.st+'" value="'+s.v+'" inputmode="decimal">'+s.u+'</span></div>'+
+        '<button type="button" class="pm" aria-label="'+s.n+': меньше">−</button><input type="range" id="'+id+'" min="'+s.min+'" max="'+s.max+'" step="'+s.st+'" value="'+s.v+'" aria-label="'+s.n+'"><button type="button" class="pm" aria-label="'+s.n+': больше">+</button>';
+      box.appendChild(r);
+      var sl=byId(id),n=byId(id+'n'),bs=r.querySelectorAll('.pm');
+      var dec=(String(s.st).split('.')[1]||'').length;
+      function show(){n.value=+(+sl.value).toFixed(dec)}
+      function setV(x){sl.value=Math.min(Math.max(x,s.min),s.max);show();fn()}
+      sl.oninput=function(){show();fn()};
+      n.oninput=function(){var x=num(n);if(x===null)return;sl.value=Math.min(Math.max(x,s.min),s.max);fn()};
+      n.onchange=function(){show()};
+      bs[0].onclick=function(){setV(+sl.value-s.st)};
+      bs[1].onclick=function(){setV(+sl.value+s.st)};
+    });
+  }
+  function ckbox(box,id,label,hint){
+    var l=document.createElement('label');l.className='ck';
+    l.innerHTML='<input type="checkbox" id="'+P+id+'"><span class="tx">'+label+(hint?'<span class="hint">'+hint+'</span>':'')+'</span>';
+    box.appendChild(l);return l;
+  }
+
+  /* --- пациент --- */
+  var pt=$('pt');
+  (function(){
+    var r=document.createElement('div');r.className='sl';
+    r.innerHTML='<label>Пол</label><div class="seg" role="group" aria-label="Пол"><button type="button" data-v="1" aria-pressed="true">Мужской</button><button type="button" data-v="0" aria-pressed="false">Женский</button></div>';
+    pt.appendChild(r);
+    var bs=r.querySelectorAll('button');
+    bs.forEach(function(b){b.onclick=function(){S.male=+b.dataset.v;bs.forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});update()}});
+  })();
+  numSlider(pt,'age','Возраст',18,100,1,'лет');
+  numSlider(pt,'h','Рост',130,220,1,'см');
+  numSlider(pt,'w','Вес',30,250,0.5,'кг');
+  var bn=document.createElement('div');bn.className='sfn';bn.id=P+'bmin';pt.appendChild(bn);
+  function bmiCls(b){return b<18.5?'дефицит массы':b<25?'норма':b<30?'избыточная масса':b<35?'ожирение I степени':b<40?'ожирение II степени':'ожирение III степени'}
+  function ibw(){return (S.male?50:45.5)+0.91*(S.h-152.4)}
+
+  /* --- шаг 1: NUTRIC --- */
+  var nu=$('nu');
+  (function(){var r=document.createElement('div');r.className='fr';r.innerHTML='<label>Возраст<span class="hint">&lt;50: 0 · 50–74: 1 · ≥75: 2</span></label><span class="fv"><b id="n_nag"></b> лет</span><span class="pt" id="n_nagp"></span>';nu.appendChild(r)})();
+  frow(nu,'apv','APACHE II','&lt;15: 0 · 15–19: 1 · 20–27: 2 · ≥28: 3','','min="0" max="71" step="1" inputmode="numeric" aria-label="APACHE II, баллы"');
+  var apd=document.createElement('details');apd.className='xp';apd.innerHTML='<summary>Рассчитать APACHE II</summary><div class="xpb" id="n_ap"></div>';nu.appendChild(apd);
+  frow(nu,'sov','SOFA','&lt;6: 0 · 6–9: 1 · ≥10: 2','','min="0" max="24" step="1" inputmode="numeric" aria-label="SOFA, баллы"');
+  var sod=document.createElement('details');sod.className='xp';sod.innerHTML='<summary>Рассчитать SOFA</summary><div class="xpb" id="n_so"></div>';nu.appendChild(sod);
+  frow(nu,'com','Количество сопутствующих заболеваний','0–1: 0 · ≥2: 1','','min="0" max="30" step="1" inputmode="numeric"');
+  frow(nu,'day','Длительность пребывания в ОРИТ','&lt;1: 0 · ≥1: 1','дн.','min="0" max="365" step="1" inputmode="decimal"');
+  $('apv').oninput=function(){apAuto=false;update()};
+  $('sov').oninput=function(){soAuto=false;update()};
+
+  /* APACHE II */
+  var ap=$('ap');
+  ap.innerHTML='<div class="gt">Физиология: худшие значения за первые 24 ч</div><div id="n_ag1"></div><div id="n_ack" style="margin-top:6px"></div><div class="gt">Хронические заболевания</div><div id="n_ach"></div><div class="xpr" id="n_apr"></div>';
+  var AS=[
+    {id:'t',n:'Температура',min:28,max:43,st:0.1,v:36.6,u:' °C'},
+    {id:'map',n:'Ср. АД',min:30,max:200,st:1,v:85,u:' мм рт.ст.'},
+    {id:'hr',n:'ЧСС',min:30,max:220,st:1,v:80,u:' /мин'},
+    {id:'rr',n:'ЧДД',min:4,max:60,st:1,v:16,u:' /мин'},
+    {id:'fio',n:'FiO₂',min:21,max:100,st:1,v:21,u:' %'},
+    {id:'pao',n:'PaO₂',min:30,max:500,st:1,v:90,u:' мм рт.ст.'},
+    {id:'pac',n:'PaCO₂',min:15,max:100,st:1,v:40,u:' мм рт.ст.'},
+    {id:'ph',n:'pH',min:6.8,max:7.8,st:0.01,v:7.4,u:''},
+    {id:'na',n:'Na⁺',min:100,max:190,st:1,v:140,u:' ммоль/л'},
+    {id:'k',n:'K⁺',min:1.5,max:8,st:0.1,v:4.2,u:' ммоль/л'},
+    {id:'cr',n:'Креатинин',min:20,max:800,st:1,v:90,u:' мкмоль/л'},
+    {id:'hct',n:'Гематокрит',min:10,max:70,st:1,v:40,u:' %'},
+    {id:'wbc',n:'Лейкоциты',min:0.5,max:60,st:0.1,v:8,u:' ×10⁹/л'},
+    {id:'gcs',n:'ШКГ',min:3,max:15,st:1,v:15,u:' баллов'}
+  ];
+  var apFn=function(){apAuto=true;update()};
+  addSl2('n_a','n_ag1',AS,apFn);
+  ckbox($('ack'),'aarf','Острое почечное повреждение','баллы за креатинин удваиваются');
+  seg($('ach'),'chr','',[[0,'Нет'],[2,'Да, плановая операция'],[5,'Да, экстренная операция или без операции']],
+    'Тяжёлая органная недостаточность или иммунодефицит до госпитализации: цирроз с портальной гипертензией, ХСН IV ФК (NYHA), тяжёлая ХОБЛ с гиперкапнией или полицитемией, хронический диализ, иммуносупрессия.',function(){apAuto=true});
+  $('aarf').onchange=function(){apAuto=true;update()};
+  function apT(x){return x>=41?4:x>=39?3:x>=38.5?1:x>=36?0:x>=34?1:x>=32?2:x>=30?3:4}
+  function apMap(x){return x>=160?4:x>=130?3:x>=110?2:x>=70?0:x>=50?2:4}
+  function apHr(x){return x>=180?4:x>=140?3:x>=110?2:x>=70?0:x>=55?2:x>=40?3:4}
+  function apRr(x){return x>=50?4:x>=35?3:x>=25?1:x>=12?0:x>=10?1:x>=6?2:4}
+  function apOx(fio,pao,pac){
+    if(fio>=50){var a=fio/100*713-pac/0.8-pao;return {t:'A–aDO₂ '+Math.round(a),p:a>=500?4:a>=350?3:a>=200?2:0}}
+    return {t:'PaO₂ '+pao,p:pao>70?0:pao>=61?1:pao>=55?3:4};
+  }
+  function apPh(x){return x>=7.7?4:x>=7.6?3:x>=7.5?1:x>=7.33?0:x>=7.25?2:x>=7.15?3:4}
+  function apNa(x){return x>=180?4:x>=160?3:x>=155?2:x>=150?1:x>=130?0:x>=120?2:x>=111?3:4}
+  function apK(x){return x>=7?4:x>=6?3:x>=5.5?1:x>=3.5?0:x>=3?1:x>=2.5?2:4}
+  function apCr(x){return x>=305?4:x>=170?3:x>=130?2:x>=53?0:2}
+  function apHct(x){return x>=60?4:x>=50?2:x>=46?1:x>=30?0:x>=20?2:4}
+  function apWbc(x){return x>=40?4:x>=20?2:x>=15?1:x>=3?0:x>=1?2:4}
+  function apAge(a){return a<=44?0:a<=54?2:a<=64?3:a<=74?5:6}
+  function apMort(t){return t<5?'4':t<10?'8':t<15?'15':t<20?'25':t<25?'40':t<30?'55':t<35?'75':'85'}
+  function apCalc(){
+    var v=function(i){return +byId('n_a'+i).value};
+    var ox=apOx(v('fio'),v('pao'),v('pac'));
+    var cr=apCr(v('cr'))*($('aarf').checked?2:1);
+    var ph=[['T',apT(v('t'))],['ср. АД',apMap(v('map'))],['ЧСС',apHr(v('hr'))],['ЧДД',apRr(v('rr'))],[ox.t,ox.p],['pH',apPh(v('ph'))],['Na',apNa(v('na'))],['K',apK(v('k'))],['креатинин',cr],['Ht',apHct(v('hct'))],['лейкоциты',apWbc(v('wbc'))],['ШКГ',15-v('gcs')]];
+    var ps=ph.reduce(function(s,x){return s+x[1]},0),ag=apAge(S.age),tot=ps+ag+S.chr;
+    $('apr').innerHTML='Физиология: '+ph.map(function(x){return x[0]+' <b>'+x[1]+'</b>'}).join(', ')+' = <b>'+ps+'</b><br>Возраст '+f0(S.age)+' лет: <b>'+ag+'</b> · хронические заболевания: <b>'+S.chr+'</b><br>APACHE II = <b>'+tot+'</b> (ориентировочная госпитальная летальность ≈'+apMort(tot)+'% у неоперированных)';
+    return tot;
+  }
+  apd.addEventListener('toggle',function(){if(apd.open){apAuto=true;update()}});
+
+  /* SOFA (компактная) */
+  var so=$('so');
+  so.innerHTML='<div class="gt">Дыхание</div><div id="n_q1"></div><div id="n_qck" style="margin-top:6px"></div>'+
+    '<div class="gt">Свёртывание и печень</div><div id="n_q2"></div>'+
+    '<div class="gt">Кровообращение</div><div id="n_q3"></div><div id="n_qv"></div>'+
+    '<div class="gt">Нервная система</div><div id="n_q4"></div>'+
+    '<div class="gt">Почки</div><div id="n_q5"></div><div id="n_qd"></div><div class="xpr" id="n_qr"></div>';
+  var Q1=[{id:'pao',n:'PaO₂',min:30,max:500,st:1,v:95,u:' мм рт.ст.'},{id:'fio',n:'FiO₂',min:21,max:100,st:1,v:21,u:' %'}];
+  var Q2=[{id:'plt',n:'Тромбоциты',min:5,max:500,st:1,v:250,u:' ×10⁹/л'},{id:'bil',n:'Билирубин',min:2,max:400,st:1,v:12,u:' мкмоль/л'}];
+  var Q3=[{id:'map',n:'Ср. АД',min:30,max:120,st:1,v:85,u:' мм рт.ст.'}];
+  var Q4=[{id:'gcs',n:'ШКГ',min:3,max:15,st:1,v:15,u:' баллов'}];
+  var Q5=[{id:'cr',n:'Креатинин',min:30,max:800,st:1,v:90,u:' мкмоль/л'}];
+  var soFn=function(){soAuto=true;update()};
+  [['n_q1',Q1],['n_q2',Q2],['n_q3',Q3],['n_q4',Q4],['n_q5',Q5]].forEach(function(g){addSl2('n_q',g[0],g[1],soFn)});
+  ckbox($('qck'),'qsup','Респираторная поддержка (ИВЛ)','баллы 3 и 4 по дыханию ставятся только при поддержке');
+  seg($('qv'),'vaso','Вазопрессоры и инотропы, мкг/кг/мин',[[0,'Нет'],[1,'Допамин ≤5 или добутамин'],[2,'Допамин &gt;5, НА или адреналин ≤0,1'],[3,'Допамин &gt;15, НА или адреналин &gt;0,1']],'',function(){soAuto=true});
+  seg($('qd'),'dc','Суточный диурез, мл',[[2,'&gt;500'],[1,'200–500'],[0,'&lt;200']],'',function(){soAuto=true});
+  $('qsup').onchange=function(){soAuto=true;update()};
+  function soCalc(){
+    var v=function(i){return +byId('n_q'+i).value},sup=$('qsup').checked;
+    var pf=Math.floor(v('pao')*100/v('fio'));
+    var re=pf>=400?0:pf>=300?1:pf>=200?2:pf>=100?(sup?3:2):(sup?4:2);
+    var x=v('plt'),co=x>=150?0:x>=100?1:x>=50?2:x>=20?3:4;
+    x=v('bil');var li=x<20?0:x<33?1:x<102?2:x<=204?3:4;
+    var cv=Math.max(v('map')<70?1:0,S.vaso?S.vaso+1:0);
+    x=v('gcs');var cn=x>=15?0:x>=13?1:x>=10?2:x>=6?3:4;
+    x=v('cr');var rn=Math.max(x<110?0:x<171?1:x<300?2:x<=440?3:4,S.dc===0?4:S.dc===1?3:0);
+    var tot=re+co+li+cv+cn+rn;
+    $('qr').innerHTML='PaO₂/FiO₂ = '+pf+': дыхание <b>'+re+'</b>, свёртывание <b>'+co+'</b>, печень <b>'+li+'</b>, кровообращение <b>'+cv+'</b>, ЦНС <b>'+cn+'</b>, почки <b>'+rn+'</b><br>SOFA = <b>'+tot+'</b>';
+    return tot;
+  }
+  sod.addEventListener('toggle',function(){if(sod.open){soAuto=true;update()}});
+
+  function nutric(){
+    var ap=num($('apv')),sf=num($('sov')),cm=num($('com')),dy=num($('day')),il=null,a=S.age;
+    var r={
+      age:a<50?0:a<75?1:2,
+      ap:ap===null?null:ap<15?0:ap<20?1:ap<28?2:3,
+      so:sf===null?null:sf<6?0:sf<10?1:2,
+      com:cm===null?null:cm>=2?1:0,
+      day:dy===null?null:dy>=1?1:0,
+      il6:il===null?null:il>=400?1:0,
+      v:{ap:ap,so:sf,com:cm,day:dy,il6:il}
+    };
+    r.tot=r.age+(r.ap||0)+(r.so||0)+(r.com||0)+(r.day||0)+(r.il6||0);
+    r.il=il!==null;r.max=r.il?10:9;r.hi=r.tot>=(r.il?6:5);
+    r.miss=[];
+    if(ap===null)r.miss.push('APACHE II');if(sf===null)r.miss.push('SOFA');if(cm===null)r.miss.push('сопутствующие заболевания');if(dy===null)r.miss.push('длительность пребывания в ОРИТ');
+    return r;
+  }
+
+  /* --- шаг 2: недостаточность питания --- */
+  var CAT=['Норма','Лёгкая','Средняя','Тяжёлая'];
+  var CC=['var(--ok)','var(--warn)','var(--bad)','var(--bad)'];
+  var SC=['#0ca30c','#e0a000','#ec835a','#d03b3b'];
+  var MN=[
+    {id:'def',n:'Дефицит массы тела',u:'%',h:'от обычной массы: норма &lt;10 · лёгкая 10–20 · средняя 21–30 · тяжёлая &gt;30',a:'min="0" max="80" step="0.1" inputmode="decimal"',f:function(x){return x<10?0:x<=20?1:x<=30?2:3}},
+    {id:'bmi',n:'ИМТ',calc:true,h:'норма ≥19 · лёгкая 17,5–19 · средняя 15,5–17,5 · тяжёлая &lt;15,5',f:function(x){return x>=19?0:x>=17.5?1:x>=15.5?2:3}},
+    {id:'tp',n:'Общий белок',u:'г/л',h:'норма ≥65 · лёгкая 55–64 · средняя 50–54 · тяжёлая &lt;50',a:'min="20" max="120" step="0.1" inputmode="decimal"',f:function(x){return x>=65?0:x>=55?1:x>=50?2:3}},
+    {id:'alb',n:'Альбумин',u:'г/л',h:'норма ≥35 · лёгкая 30–34 · средняя 25–29 · тяжёлая &lt;25',a:'min="5" max="60" step="0.1" inputmode="decimal"',f:function(x){return x>=35?0:x>=30?1:x>=25?2:3}},
+    {id:'trf',n:'Трансферрин',u:'г/л',h:'норма ≥2,0 · лёгкая 1,8–1,9 · средняя 1,6–1,7 · тяжёлая &lt;1,6',a:'min="0" max="6" step="0.01" inputmode="decimal"',f:function(x){return x>=2?0:x>=1.8?1:x>=1.6?2:3}},
+    {id:'lym',n:'Лимфоциты',u:'×10⁹/л',h:'норма ≥1,8 · лёгкая 1,5–1,8 · средняя 0,9–1,5 · тяжёлая &lt;0,9',a:'min="0" max="20" step="0.01" inputmode="decimal"',f:function(x){return x>=1.8?0:x>=1.5?1:x>=0.9?2:3}}
+  ];
+  var mf=$('mf');
+  MN.forEach(function(m){
+    if(m.calc){
+      var r=document.createElement('div');r.className='fr two';
+      r.innerHTML='<label>'+m.n+'<span class="hint">'+m.h+'</span><span class="cat" id="n_bmic"></span></label><span class="fv"><b id="n_bmiv"></b> кг/м²</span>';
+      mf.appendChild(r);
+    }else frow(mf,m.id,m.n,m.h,m.u,m.a,true);
+  });
+  $('mstg').innerHTML=CAT.map(function(c,i){
+    return '<div class="b" role="listitem" id="n_g'+i+'" style="border-left-color:'+SC[i]+'"><div class="g">'+(i?c:'Нет')+'</div><div class="r" id="n_gr'+i+'"></div></div>';
+  }).join('');
+  function malnut(){
+    var m=S.h/100,bmi=S.w/(m*m),cnt=[0,0,0,0],n=0,rows=[];
+    MN.forEach(function(x){
+      var v=x.calc?bmi:num($(x.id));
+      if(v===null){rows.push({x:x,v:null});return}
+      var c=x.f(v);cnt[c]++;n++;rows.push({x:x,v:v,c:c});
+    });
+    var d=cnt[1]+2*cnt[2]+3*cnt[3],avg=n?d/n:0;
+    var cat=d===0?0:avg<=1?1:avg<=2?2:3;
+    return {bmi:bmi,cnt:cnt,n:n,d:d,avg:avg,cat:cat,rows:rows};
+  }
+
+  /* --- шаг 3: метаболические потребности --- */
+  var FP=[
+    ['пациент без осложнений',1.0],
+    ['заболевания печени',1.0],
+    ['после оперативного вмешательства (без осложнений)',1.1],
+    ['воспалительное заболевание толстого кишечника',1.1],
+    ['переломы',1.2],
+    ['онкологическое заболевание',1.2],
+    ['трансплантация органа',1.2],
+    ['лейкемия / лимфома',1.25],
+    ['после оперативного вмешательства (с осложнениями)',1.25],
+    ['панкреатит (отёчная форма)',1.25],
+    ['инфекционное (несептическое) заболевание',1.25],
+    ['сепсис',1.3],
+    ['разлитой перитонит, некротизирующий панкреатит',1.4],
+    ['политравма, реабилитация',1.5],
+    ['политравма + сепсис',1.6],
+    ['ожоги 30–50%',1.7],
+    ['ожоги 50–70%',1.8],
+    ['ожоги 70–90%',2.0]
+  ];
+  var FA=[['постельный режим',1.1],['полупостельный режим',1.2],['ходячий режим',1.3]];
+  var mm=$('mm');
+  mm.innerHTML='<div id="n_m1"></div><div id="n_vv" style="padding-bottom:6px"></div><div id="n_m2"></div>';
+  seg($('m1'),'vent','Пациент на ИВЛ',[[0,'Нет'],[1,'Да']],'');
+  numSlider($('vv'),'ve','Минутная вентиляция',2,30,0.1,'л/мин');
+  var m2=$('m2');
+  function vrow(id,label,hint,html){
+    var r=document.createElement('div');r.className='fr two';
+    r.innerHTML='<label'+(id?' for="'+P+id+'"':'')+'>'+label+(hint?'<span class="hint">'+hint+'</span>':'')+'</label><span class="fv">'+html+'</span>';
+    m2.appendChild(r);return r;
+  }
+  function selRow(id,label,list){
+    var r=document.createElement('div');r.className='fr col';
+    r.innerHTML='<label for="'+P+id+'">'+label+'</label><select class="nsel" id="'+P+id+'"><option value="-1">— не выбран —</option>'+
+      list.map(function(f,i){return '<option value="'+i+'">'+f[0]+'</option>'}).join('')+'</select>';
+    m2.appendChild(r);
+  }
+  function numIn(id,attrs){return '<input type="number" class="numin" id="'+P+id+'" '+attrs+'>'}
+  vrow('','Основной обмен','Харрис–Бенедикт: пол, возраст, рост, вес','<b id="n_bmr"></b> ккал/сут');
+  selRow('fas','Фактор активности',FA);
+  vrow('fav','Оценка ФА','',numIn('fav','min="0.5" max="3" step="0.05" value="1" inputmode="decimal"'));
+  vrow('tc','Температура тела','для температурного фактора',numIn('tc','min="30" max="43" step="0.1" value="36.6" inputmode="decimal"')+' °C');
+  vrow('','Оценка ТФ','+0,1 на каждый градус выше 37 °C','<b id="n_tfv"></b>');
+  selRow('fps','Фактор повреждения',FP);
+  vrow('fpv','Оценка ФП','',numIn('fpv','min="0.5" max="3" step="0.05" value="1" inputmode="decimal"'));
+  frow(m2,'ic','Энергопотребность по непрямой калориметрии','если измерена, используется вместо расчёта','ккал/сут','min="300" max="6000" step="1" inputmode="numeric"',true);
+  $('fas').onchange=function(){var i=+this.value;S.fa=i<0?1:FA[i][1];$('fav').value=S.fa;update()};
+  $('fav').oninput=function(){var x=num(this);if(x===null||x<=0)return;S.fa=x;update()};
+  $('tc').oninput=function(){var x=num(this);if(x===null||x<25)return;S.t=x;update()};
+  $('fps').onchange=function(){var i=+this.value;S.fp=i<0?1:FP[i][1];$('fpv').value=S.fp;update()};
+  $('fpv').oninput=function(){var x=num(this);if(x===null||x<=0)return;S.fp=x;update()};
+  $('mac').innerHTML=[['pr','Белки'],['lp','Липиды'],['cb','Углеводы']].map(function(x){
+    return '<div class="card"><div class="nm">'+x[1]+'</div><div class="vl" id="n_'+x[0]+'V">—</div><div class="u" id="n_'+x[0]+'U"></div><div class="rg" id="n_'+x[0]+'R"></div></div>';
+  }).join('');
+
+  function energy(){
+    var W=S.w,H=S.h,A=S.age,m=H/100,bmi=W/(m*m);
+    var r={bmi:bmi};
+    r.hb=S.male?66.5+13.75*W+5.003*H-6.775*A:655.1+9.563*W+1.850*H-4.676*A;
+    r.tf=S.t>37?1+0.1*(S.t-37):1;
+    r.calc=r.hb*S.fa*r.tf*S.fp;
+    if(S.vent){
+      r.mif=10*W+6.25*H-5*A+(S.male?5:-161);
+      r.mod=A>=60&&bmi>=30;
+      r.ps=r.mod?r.mif*0.71+S.ve*64+S.t*85-3085:r.mif*0.96+S.ve*31+S.t*167-6212;
+    }
+    r.ic=num($('ic'));
+    r.useIc=r.ic!==null&&r.ic>0;
+    r.e=r.useIc?r.ic:r.calc;
+    r.pr=r.e/24;r.lp=r.e/27;r.cb=r.e/8;
+    return r;
+  }
+
+  /* --- прогресс и навигация --- */
+  var prog=$('prog');
+  NAMES.forEach(function(n,i){
+    var b=document.createElement('button');b.type='button';b.id=P+'pg'+i;b.setAttribute('role','listitem');
+    b.innerHTML='<span class="k">'+(i+1)+'</span><span>'+n+'</span>';
+    b.onclick=function(){go(i)};
+    prog.appendChild(b);
+  });
+  function go(n){
+    for(var i=0;i<n;i++)if(stt[i]==='todo')stt[i]='skip';
+    step=n;
+    for(var j=0;j<4;j++)$('s'+j).hidden=(j!==n);
+    $('back').hidden=(n===0);
+    $('skip').hidden=(n>=2);
+    $('next').textContent=n===3?'К шагу 1':(n===2?'Справка →':'Далее →');
+    update();
+    var top=prog.getBoundingClientRect().top;
+    if(top<0)prog.scrollIntoView({block:'start'});
+  }
+  $('next').onclick=function(){if(step===3){go(0);return}stt[step]='done';go(step+1)};
+  $('skip').onclick=function(){stt[step]='skip';go(step+1)};
+  $('back').onclick=function(){go(step-1)};
+
+  /* --- пересчёт --- */
+  function update(){
+    var m=S.h/100,bmi=S.w/(m*m);
+    $('bmin').innerHTML='ИМТ <b>'+f1(bmi)+' кг/м²</b> ('+bmiCls(bmi)+') · идеальная масса (Devine) <b>'+f1(ibw())+' кг</b>';
+
+    /* шаг 1 */
+    var a1=apCalc();if(apAuto)$('apv').value=a1;
+    var s1=soCalc();if(soAuto)$('sov').value=s1;
+    var N=nutric();
+    $('nag').textContent=f0(S.age);$('nagp').textContent=N.age;
+    ['ap','so','com','day'].forEach(function(k){
+      var id={ap:'apv',so:'sov',com:'com',day:'day'}[k];
+      $(id+'p').textContent=N[k]===null?'—':N[k];
+    });
+    $('nnm').textContent='NUTRIC';
+    $('nt').textContent=N.tot;$('nun').textContent='из '+N.max;
+    var nc=N.hi?'var(--bad)':'var(--ok)';
+    $('nh').style.setProperty('--dc',nc);
+    $('nst').style.color=nc;
+    $('nst').textContent=N.hi?'Высокий балл (≥'+(N.il?6:5)+')':'Низкий балл (0–'+(N.il?5:4)+')';
+    $('nsm').textContent=(N.hi?'Выше риск неблагоприятного исхода. Такие пациенты с наибольшей вероятностью выиграют от активной нутритивной поддержки: стремитесь к целевым энергии и белку.':'Риск неблагоприятного исхода, связанный с питанием, невысокий.')+
+      (N.miss.length?' Не заполнены: '+N.miss.join(', ')+'. За них начислено 0 баллов, итог может быть занижен.':'');
+    function rw(n,txt,p){return '<div class="row"><span class="n">'+n+'</span><span>'+txt+' → <b>'+(p===null?'не оценено':p)+'</b></span></div>'}
+    $('neq').innerHTML=
+      rw(1,'Возраст '+f0(S.age)+' лет',N.age)+
+      rw(2,'APACHE II '+(N.v.ap===null?'—':N.v.ap),N.ap)+
+      rw(3,'SOFA '+(N.v.so===null?'—':N.v.so),N.so)+
+      rw(4,'Сопутствующих заболеваний: '+(N.v.com===null?'—':N.v.com),N.com)+
+      rw(5,'Длительность пребывания в ОРИТ: '+(N.v.day===null?'—':nf(N.v.day)),N.day)+
+      (N.il?rw(6,'ИЛ-6 '+nf(N.v.il6)+' пг/мл',N.il6):'')+
+      '<div class="row"><span class="n">∑</span><span>NUTRIC = <b>'+N.tot+'</b> из '+N.max+'</span></div>';
+
+    /* шаг 2 */
+    var U=malnut();
+    U.rows.forEach(function(r){
+      var el=r.x.calc?$('bmic'):$(r.x.id+'c');
+      if(r.x.calc)$('bmiv').textContent=f1(r.v);
+      if(r.v===null){el.textContent='Не оценивали';el.style.color='var(--muted)';return}
+      if(r.x.calc&&r.v>=25){el.textContent='Норма по критериям питания ('+bmiCls(r.v)+')';el.style.color='var(--ok)';return}
+      el.textContent=r.c?CAT[r.c]+' недостаточность питания':'Норма';
+      el.style.color=CC[r.c];
+    });
+    if(U.n===0){
+      $('mc').textContent='Не оценена';$('mc').style.color='';$('mh').style.setProperty('--dc','var(--border)');
+      $('msm').textContent='Введите хотя бы один показатель.';
+    }else{
+      $('mc').textContent=U.cat?CAT[U.cat]+' недостаточность питания':'Недостаточности питания нет';
+      $('mc').style.color=CC[U.cat];$('mh').style.setProperty('--dc',SC[U.cat]);
+      $('msm').innerHTML='Сумма баллов <b>'+U.d+'</b> из '+(3*U.n)+' (оценено показателей: '+U.n+'), средний балл <b>'+fm(U.avg,2)+'</b>. За показатель: норма 0, лёгкая 1, средняя 2, тяжёлая 3. Итог: 0 — нет, средний балл до 1,0 — лёгкая, до 2,0 — средняя, выше 2,0 — тяжёлая.';
+    }
+    for(var i=0;i<4;i++){
+      var g=$('g'+i);
+      if(U.n&&i===U.cat)g.setAttribute('aria-current','true');else g.removeAttribute('aria-current');
+      $('gr'+i).textContent=U.cnt[i]?'показателей: '+U.cnt[i]:'—';
+    }
+
+    /* шаг 3 */
+    var E=energy(),W=S.w;
+    $('vv').hidden=!S.vent;
+    $('bmr').textContent=fm(E.hb,2);
+    $('tfv').textContent=fm(E.tf,2);
+    $('ev').textContent=f0(E.e);
+    $('enm').textContent=E.useIc?'Энергопотребность (непрямая калориметрия)':'Истинная энергопотребность';
+    $('esm').innerHTML='≈ <b>'+f1(E.e/W)+' ккал/кг</b> фактической массы'+(E.useIc?' · расчётная потребность '+f0(E.calc)+' ккал/сут':' · ОО × ФА × ТФ × ФП')+
+      (S.vent?'<br>Для сравнения, Penn State '+(E.mod?'2010':'2003b')+' (ИВЛ): <b>'+f0(E.ps)+' ккал/сут</b>':'');
+    [['pr',E.pr,4,'1/6'],['lp',E.lp,9,'1/3'],['cb',E.cb,4,'1/2']].forEach(function(x){
+      $(x[0]+'V').textContent=fm(x[1],1);
+      $(x[0]+'U').textContent='г/сут · '+f0(x[1]*x[2])+' ккал ('+x[3]+')';
+      $(x[0]+'R').textContent=fm(x[1]/W,2)+' г/кг фактической массы';
+    });
+    var sx=S.male?'муж.':'жен.',rows='',k=0;
+    function rr(t){k++;rows+='<div class="row"><span class="n">'+k+'</span><span>'+t+'</span></div>'}
+    rr('ОО по Харрису–Бенедикту ('+sx+') = '+(S.male?'66,5 + 13,75 × '+nf(W)+' + 5,003 × '+S.h+' − 6,775 × '+f0(S.age):'655,1 + 9,563 × '+nf(W)+' + 1,85 × '+S.h+' − 4,676 × '+f0(S.age))+' = <b>'+fm(E.hb,2)+' ккал/сут</b>');
+    rr('ТФ = '+(S.t>37?'1 + 0,1 × ('+nf(S.t)+' − 37) = ':'температура ≤37 °C → ')+'<b>'+fm(E.tf,2)+'</b>');
+    rr('ИЭП = ОО × ФА × ТФ × ФП = '+fm(E.hb,2)+' × '+nf(S.fa)+' × '+fm(E.tf,2)+' × '+nf(S.fp)+' = <b>'+fm(E.calc,2)+' ккал/сут</b>');
+    if(S.vent)rr('Для сравнения на ИВЛ: Миффлин–Сан Жеор = '+f0(E.mif)+'; Penn State '+(E.mod?'2010 (возраст ≥60, ИМТ ≥30) = '+f0(E.mif)+' × 0,71 + '+nf(S.ve)+' × 64 + '+nf(S.t)+' × 85 − 3085':'2003b = '+f0(E.mif)+' × 0,96 + '+nf(S.ve)+' × 31 + '+nf(S.t)+' × 167 − 6212')+' = <b>'+f0(E.ps)+' ккал/сут</b>');
+    if(E.useIc)rr('Непрямая калориметрия: <b>'+f0(E.ic)+' ккал/сут</b>, используется вместо расчёта');
+    rr('Белки = '+f0(E.e)+' ÷ 6 ÷ 4 = <b>'+fm(E.pr,2)+' г</b>; липиды = '+f0(E.e)+' ÷ 3 ÷ 9 = <b>'+fm(E.lp,2)+' г</b>; углеводы = '+f0(E.e)+' ÷ 2 ÷ 4 = <b>'+fm(E.cb,2)+' г</b>');
+    $('eeq').innerHTML=rows;
+
+
+    /* итог */
+    var it=[];
+    it.push('<li>NUTRIC: '+(stt[0]==='done'?'<b>'+N.tot+' из '+N.max+'</b>, '+(N.hi?'высокий балл':'низкий балл'):'<span class="dz">шаг пропущен</span>')+'</li>');
+    it.push('<li>Недостаточность питания: '+(stt[1]==='done'?(U.n?'<b>'+(U.cat?CAT[U.cat].toLowerCase()+' степень':'нет')+'</b>':'не оценена'):'<span class="dz">шаг пропущен</span>')+'</li>');
+    it.push('<li>Энергопотребность: <b>'+f0(E.e)+' ккал/сут</b>; белки '+f0(E.pr)+' г, липиды '+f0(E.lp)+' г, углеводы '+f0(E.cb)+' г</li>');
+    $('sum').innerHTML='<h3>Итог</h3><ul>'+it.join('')+'</ul>';
+
+    for(var k=0;k<4;k++){
+      var pg=$('pg'+k);
+      pg.classList.toggle('done',stt[k]==='done');
+      pg.classList.toggle('skip',stt[k]==='skip'&&k!==step);
+      if(k===step)pg.setAttribute('aria-current','step');else pg.removeAttribute('aria-current');
+    }
+  }
+  go(0);
+})();
+
+/* ---------- router ---------- */
+(function(){
+  var views=document.querySelectorAll('[data-view]');
+  function route(){
+    var id=location.hash.slice(1),found=null;
+    views.forEach(function(s){if(s.id===id&&id!=='home')found=s});
+    if(!found)found=byId('home');
+    views.forEach(function(s){s.hidden=(s!==found)});
+    document.title=found.getAttribute('data-title');
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',route);
+  route();
+})();
+
+/* ---------- Telegram Mini App ---------- */
+(function(){
+  var tg=window.Telegram&&window.Telegram.WebApp;
+  if(!tg)return; // обычный браузер: страница работает как есть
+  try{
+    tg.ready();
+    tg.expand();
+    function theme(){document.documentElement.setAttribute('data-theme',tg.colorScheme==='dark'?'dark':'light')}
+    theme();
+    if(tg.onEvent)tg.onEvent('themeChanged',theme);
+    var bb=tg.BackButton;
+    if(bb){
+      var sync=function(){
+        var id=location.hash.slice(1);
+        if(id&&id!=='home')bb.show();else bb.hide();
+      };
+      bb.onClick(function(){location.hash=''});
+      window.addEventListener('hashchange',sync);
+      sync();
+    }
+  }catch(e){}
+})();
+</script>
+
+<script>
+/* Счётчик пользователей: отправляет данные Telegram на воркер Cloudflare. Не удалять при обновлении файла. */
+(function () {
+  const tg = window.Telegram && window.Telegram.WebApp;
+
+  if (!tg || !tg.initData) {
+    console.warn("Telegram WebApp data is unavailable");
+    return;
+  }
+
+  tg.ready();
+
+  fetch("https://mcalc-statistics.alekseyka.workers.dev/track", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      initData: tg.initData
+    })
+  })
+  .then(response => response.json())
+  .then(data => console.log("Статистика:", data))
+  .catch(error => console.error("Ошибка счётчика:", error));
+})();
+</script>
+</body></html>
